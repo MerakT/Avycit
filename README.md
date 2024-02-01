@@ -9,7 +9,7 @@ Plataforma Web diseñada para Estudiantes y Docentes de la UDH para el manejo y 
 - ¿Cómo debe ser la vista de los Docente de Tesis?
 
 ## FRAMEWORKS AND THINGYS
-- FRONTEND: Angular o React
+- FRONTEND: Next.js con Tailwind
 - BACKEND: Django
 - IA: Python
 - SERVIDOR: Hacer Pruebas en Amazon - Docker

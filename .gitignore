@@ -1,0 +1,25 @@
+# Entornos
+venv/
+
+# Dependencias
+node_modules/
+bower_components/
+
+# Distribución
+dist/
+build/
+
+# Otros
+.idea/
+
+# Python
+__pycache__/
+migrations/
+__init__.py
+
+# Django
+*.log
+*.pot
+*.pyc
+local_settings.py
+db.sqlite3
