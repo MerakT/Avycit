@@ -9,9 +9,9 @@ Plataforma Web diseñada para Estudiantes y Docentes de la UDH para el manejo y 
 - ¿Cómo debe ser la vista de los Docente de Tesis?
 
 ## FRAMEWORKS AND THINGYS
-- FRONTEND: Next.js con Tailwind
-- BACKEND: Django
-- IA: Python
+- FRONTEND: Next.js 14 con Shadcn UI, Tailwind
+- BACKEND: Django (lo que está en el requirements)
+- IA: OpenAI
 - SERVIDOR: Hacer Pruebas en Amazon - Docker
 
 ## APIS
@@ -19,10 +19,18 @@ Plataforma Web diseñada para Estudiantes y Docentes de la UDH para el manejo y 
 - UDH: Sistema de cuentas, maybe probably
 
 ## PERFILES
-- Estudiante
+### Externos
+- Persona Natural
+- Empresa
+- Admin
+### Internos
+- Tesista
 - Asesor
-- Admin/VRI
-- Docente de Tesis
+- Jurado
+- Coordinador
+- Sec_PA
+- Sec_FAC
+
 
 ## COSAS DE LOGIN
 - El sistema debe permitir loguearse (?) solo con un correo institucional de la UDH
