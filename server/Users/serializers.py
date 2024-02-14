@@ -12,7 +12,7 @@ class CustomTokenSerializer(TokenSerializer):
 
 class CustomLoginSerializer(LoginSerializer):
     email = serializers.EmailField(required=True)
-    password = serializers.CharField(required=True, style={'input_type': 'password'})
+    password = serializers.CharField(required=True)
 
     def get_response_serializer(self):
         return CustomTokenSerializer
