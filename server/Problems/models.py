@@ -3,9 +3,9 @@ from django.db import models
 from Users.models import Usuario
 
 RAW_STATUTES = [
-    ('en revision', 'En revisión'),
-    ('rechazado', 'Rechazado'),
-    ('publicado', 'Publicado'),
+    ('Revisión pendiente', 'revisión pendiente'),
+    ('Rechazado', 'rechazado'),
+    ('Publicado', 'publicado'),
 ]
 
 STATUS_CHOICES = [
@@ -26,9 +26,9 @@ class RawProblem(models.Model):
     file_3 = models.FileField(upload_to='problems/', blank=True, null=True)
     file_4 = models.FileField(upload_to='problems/', blank=True, null=True)
     raw_status = models.CharField(
-        max_length=12,
+        max_length=18,
         choices=RAW_STATUTES,
-        default='en revision',
+        default='Revisión pendiente',
     )
     observation = models.TextField(blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
