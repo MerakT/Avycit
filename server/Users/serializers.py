@@ -5,10 +5,33 @@ from rest_framework import serializers
 from .models import Usuario
 from Docs.models import FirmaDigital
 
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Usuario
+        exclude = (
+            'password', 
+            'is_superuser', 
+            'is_staff', 
+            'is_active', 
+            'date_joined', 
+            'last_login', 
+            'groups',
+            'user_permissions',
+            'registration_method',
+        )
+
 class CustomTokenSerializer(TokenSerializer):
 
+    # Get the User data to pass to the response
+    user = serializers.SerializerMethodField(read_only=True)
+
     class Meta(TokenSerializer.Meta):
-        fields = ['key']
+        fields = ['key', 'user']
+        
+    def get_user(self, obj):
+        # Use the CustomUserDetailsSerializer to serialize the user data
+        user_serializer = UserSerializer(obj.user)
+        return user_serializer.data
 
 class CustomLoginSerializer(LoginSerializer):
     email = serializers.EmailField(required=True)
@@ -45,4 +68,4 @@ class CustomRegisterSerializer(RegisterSerializer):
 class CustomUserDetailsSerializer(serializers.ModelSerializer):
     class Meta:
         model = Usuario
-        fields = ['email', 'first_name', 'last_name', 'role']
+        fields = ['first_name', 'last_name', 'phone']
