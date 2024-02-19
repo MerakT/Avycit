@@ -9,13 +9,19 @@ SECRET_KEY = os.environ.get('DJANGO_KEY') or 'django-insecure-$2itfu&rqrovvldye3
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get('DEBUG') or True
-ALL_CORS = os.environ.get('ALL_CORS', 'True')=='True'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-if DEBUG:
-    ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ['*']
+
+# CORS
+if not DEBUG:
+    CORS_ALLOWED_ORIGINS = [
+        'http://localhost',
+        'http://127.0.0.1',
+        'http://0.0.0.0'
+    ]
 else:
-    ALLOWED_HOSTS = []
+    CORS_ALLOW_ALL_ORIGINS = True
 
 # Application definition
 
@@ -150,7 +156,6 @@ ACCOUNT_AUTHENTICATION_METHOD = 'email'
 ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_UNIQUE_EMAIL = True
 ACCOUNT_USERNAME_REQUIRED = False
-ACCOUNT_USER_MODEL_USERNAME_FIELD = 'email'
 USERNAME_REQUIRED = False
 ACCOUNT_EMAIL_VERIFICATION = None
 ACCOUNT_CONFIRM_EMAIL_ON_GET = False
@@ -173,13 +178,5 @@ if not DEBUG:
             'rest_framework.authentication.TokenAuthentication',
         ],
     }
-
-# CORS
-if not ALL_CORS:
-    CORS_ALLOWED_ORIGINS = [
-        'http://localhost:3000',
-    ]
-else:
-    CORS_ALLOW_ALL_ORIGINS = True
 
 # Social Auth

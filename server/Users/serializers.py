@@ -57,7 +57,10 @@ class CustomRegisterSerializer(RegisterSerializer):
         model = Usuario
 
     def custom_signup(self, request, user):
-        user.username = self.validated_data.get('email', '')
+        if self.validated_data.get('username', ''):
+            user.username = self.validated_data.get('username', '')
+        else:
+            user.username = self.validated_data.get('email', '')
         user.first_name = self.validated_data.get('nombre', '')
         user.last_name = self.validated_data.get('apellidos', '')
         user.phone = self.validated_data.get('telefono', '')
