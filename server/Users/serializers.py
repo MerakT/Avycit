@@ -57,14 +57,33 @@ class CustomRegisterSerializer(RegisterSerializer):
         model = Usuario
 
     def custom_signup(self, request, user):
+        # General Data
         if self.validated_data.get('username', ''):
             user.username = self.validated_data.get('username', '')
         else:
             user.username = self.validated_data.get('email', '')
+        user.email = self.validated_data.get('email', '')
         user.first_name = self.validated_data.get('nombre', '')
         user.last_name = self.validated_data.get('apellidos', '')
-        user.phone = self.validated_data.get('telefono', '')
         user.role = self.validated_data.get('role', '')
+
+        # UDH Data
+        user.career = self.validated_data.get('career', None)
+        user.code = self.validated_data.get('code', None)
+        user.grado = self.validated_data.get('grado', None)
+        user.signature_photo = self.validated_data.get('signature_photo', None)
+
+        # Banco de Problemas Data
+        user.dni = self.validated_data.get('dni', None)
+        user.ruc = self.validated_data.get('ruc', None) # EMPRESA
+        user.razon_social = self.validated_data.get('razon_social', None) # EMPRESA
+        user.phone = self.validated_data.get('phone', None)
+        user.address = self.validated_data.get('address', None)
+        user.can_finance = self.validated_data.get('can_finance', None)
+        user.charge = self.validated_data.get('charge', None) # EMPRESA
+        user.area = self.validated_data.get('area', None) # EMPRESA
+
+        # Save the User
         user.save()
         return super().custom_signup(request, user)
     
