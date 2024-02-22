@@ -1,7 +1,8 @@
 import { UnauthorizedError, ConflictError } from "@/errors/http_errors";
 
 export async function fetchData(input: RequestInfo, init?: RequestInit) {
-    const response = await fetch(input, init);
+    const drf_url = "https://avicyt.onrender.com"
+    const response = await fetch( drf_url+input, init);
     if(response.ok){
         return response;
     } else {
