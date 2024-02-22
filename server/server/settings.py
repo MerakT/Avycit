@@ -105,7 +105,7 @@ STATIC_URL = 'static/'
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
-if not ON_RENDER:
+if ON_RENDER:
     STATIC_URL = '/static/'
     STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
