@@ -34,6 +34,7 @@ export class AuthAPI{
 
         // Save the token and role in local storage
         localStorage.setItem('token', token);
+        localStorage.setItem('role', token.user.role);
 
         // Get the user data
         const user = await this.getLoggedInUser(token); 

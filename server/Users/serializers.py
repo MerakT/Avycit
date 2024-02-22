@@ -87,7 +87,3 @@ class CustomRegisterSerializer(RegisterSerializer):
         user.save()
         return super().custom_signup(request, user)
     
-class CustomUserDetailsSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Usuario
-        fields = ['first_name', 'last_name', 'phone']

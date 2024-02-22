@@ -166,7 +166,7 @@ REST_AUTH = {
     'LOGIN_SERIALIZER': 'Users.serializers.CustomLoginSerializer',
     'TOKEN_SERIALIZER': 'Users.serializers.CustomTokenSerializer',  #Esto es por si necesitamos más adelante
     'REGISTER_SERIALIZER': 'Users.serializers.CustomRegisterSerializer',
-    'USER_DETAILS_SERIALIZER': 'Users.serializers.CustomUserDetailsSerializer',
+    'USER_DETAILS_SERIALIZER': 'Users.serializers.UserSerializer',
 
 }
 
