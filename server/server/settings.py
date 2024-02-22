@@ -1,4 +1,5 @@
 from pathlib import Path
+import dj_database_url
 import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -9,6 +10,7 @@ SECRET_KEY = os.environ.get('DJANGO_KEY') or 'django-insecure-$2itfu&rqrovvldye3
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get('DEBUG') or True
+ON_RENDER = os.environ.get('ON_RENDER') or False
 
 # SECURITY WARNING: don't run with debug turned on in production!
 ALLOWED_HOSTS = ['*']
@@ -97,16 +99,25 @@ WSGI_APPLICATION = 'server.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'avicyt',
-        'USER': 'root',
-        'PORT': '3306',
-        'HOST': 'localhost',
-        'PASSWORD': 'andre0116',
-    }
+if ON_RENDER:
+    DATABASES = {
+    'default': dj_database_url.config(
+        # Replace this value with your local database's connection string.
+        default='postgres://merakt:wc7ppIoBBAbMexdIfQjpN98Mfc0SxvwF@dpg-cnbm1uol5elc73fmb2a0-a.oregon-postgres.render.com/avicyt',
+        conn_max_age=600
+    )
 }
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.mysql',
+            'NAME': 'avicyt',
+            'USER': 'root',
+            'PORT': '3306',
+            'HOST': 'localhost',
+            'PASSWORD': 'andre0116',
+        }
+    }
 
 
 # Password validation
