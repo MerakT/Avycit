@@ -166,31 +166,30 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 AUTH_USER_MODEL = 'Users.Usuario'
 
 # Allauth account settings
-ACCOUNT_AUTHENTICATION_METHOD = 'email'
+ACCOUNT_USER_MODEL_USERNAME_FIELD = 'email'
 ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_UNIQUE_EMAIL = True
 ACCOUNT_USERNAME_REQUIRED = False
-USERNAME_REQUIRED = False
+ACCOUNT_AUTHENTICATION_METHOD = 'email'
 ACCOUNT_EMAIL_VERIFICATION = None
-ACCOUNT_CONFIRM_EMAIL_ON_GET = False
-ACCAUNT_MODEL_USERNAME_FIELD = None
+ACCOUNT_SIGNUP_PASSWORD_ENTER_TWICE = False
+ACCOUNT_ADAPTER = 'Users.adapters.CustomAccountAdapter'
 
 # Rest_auth settings
 REST_AUTH = {
     'LOGIN_SERIALIZER': 'Users.serializers.CustomLoginSerializer',
     'TOKEN_SERIALIZER': 'Users.serializers.CustomTokenSerializer',  #Esto es por si necesitamos más adelante
     'REGISTER_SERIALIZER': 'Users.serializers.CustomRegisterSerializer',
-    'USER_DETAILS_SERIALIZER': 'Users.serializers.UserSerializer',
+    'USER_DETAILS_SERIALIZER': 'Users.serializers.UserDetailsSerializer',
 
 }
 
 # Rest Framework settings
-if not DEBUG:
-    REST_FRAMEWORK = {
-        'DEFAULT_AUTHENTICATION_CLASSES': [
-            'rest_framework.authentication.SessionAuthentication',
-            'rest_framework.authentication.TokenAuthentication',
-        ],
-    }
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.SessionAuthentication',
+        'rest_framework.authentication.TokenAuthentication',
+    ],
+}
 
 # Social Auth

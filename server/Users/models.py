@@ -62,7 +62,7 @@ class UsuarioManager(BaseUserManager):
     
 class Usuario(AbstractUser):
     # General Fields
-    username = models.CharField(max_length=150, unique=True)
+    username = models.CharField(max_length=150, unique=False)
     first_name = models.CharField(max_length=150)
     last_name = models.CharField(max_length=150)
     email = models.EmailField(unique=True)
@@ -96,6 +96,7 @@ class Usuario(AbstractUser):
     objects = UsuarioManager()
 
     REQUIRED_FIELDS = []
+    USERNAME_FIELD = 'email'
 
     def __str__(self):
         return self.first_name + ' ' + self.last_name + ' - ' + self.email
