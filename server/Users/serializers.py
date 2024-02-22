@@ -65,6 +65,9 @@ class CustomRegisterSerializer(RegisterSerializer):
         return super().custom_signup(request, user)
     
 class UserDetailsSerializer(serializers.ModelSerializer):
+    # Get the signature photo URL
+    signature_photo = serializers.ImageField(use_url=True)
+
     class Meta:
         model = Usuario
         fields = [

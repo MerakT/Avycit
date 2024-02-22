@@ -105,9 +105,14 @@ STATIC_URL = 'static/'
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
-if ON_RENDER:
-    STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+if not ON_RENDER:
     STATIC_URL = '/static/'
+    STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
+    # For Media Files
+    MEDIA_URL = '/media/'
+    MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
     DATABASES = {
     'default': dj_database_url.config(
         # Replace this value with your local database's connection string.
