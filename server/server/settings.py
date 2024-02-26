@@ -105,13 +105,13 @@ STATIC_URL = 'static/'
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
+# For Media Files
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
 if ON_RENDER:
     STATIC_URL = '/static/'
     STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
-
-    # For Media Files
-    MEDIA_URL = '/media/'
-    MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
     DATABASES = {
     'default': dj_database_url.config(
@@ -119,7 +119,22 @@ if ON_RENDER:
         default='postgres://merakt:wc7ppIoBBAbMexdIfQjpN98Mfc0SxvwF@dpg-cnbm1uol5elc73fmb2a0-a.oregon-postgres.render.com/avicyt',
         conn_max_age=600
     )
-}
+    }
+    
+    STORAGES = {
+        "default": {
+            "BACKEND": "storages.backends.s3.S3Storage",
+            "OPTIONS": {
+                "access_key": os.environ.get('AWS_ACCESS_KEY'),
+                "secret_key": os.environ.get('AWS_SECRET_ACCESS_KEY'),
+                "bucket_name": os.environ.get('AWS_STORAGE_BUCKET_NAME'),
+            },
+        },
+        "staticfiles": {
+            "BACKEND":'whitenoise.storage.CompressedManifestStaticFilesStorage',
+        }
+    }
+
 else:
     DATABASES = {
         'default': {
