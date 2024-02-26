@@ -19,12 +19,17 @@ class CustomTokenSerializer(TokenSerializer):
         return user_serializer.data
 
 class CustomLoginSerializer(LoginSerializer):
-    username = None
     email = serializers.EmailField(required=True)
     password = serializers.CharField(style={'input_type': 'password'})
 
     def get_response_serializer(self):
         return CustomTokenSerializer
+    
+    def get_fields(self):
+        fields = super().get_fields()
+        fields['email'] = fields['username']
+        del fields['username']
+        return fields
     
 class CustomRegisterSerializer(RegisterSerializer):
     username = None

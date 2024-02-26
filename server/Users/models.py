@@ -62,7 +62,7 @@ class UsuarioManager(BaseUserManager):
     
 class Usuario(AbstractUser):
     # General Fields
-    username = models.CharField(max_length=150, unique=False)
+    username = models.CharField(max_length=150)
     first_name = models.CharField(max_length=150)
     last_name = models.CharField(max_length=150)
     email = models.EmailField(unique=True)
