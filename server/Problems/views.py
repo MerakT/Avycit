@@ -4,6 +4,7 @@ from rest_framework import authentication, permissions
 
 from .models import RawProblem, CleanProblem
 from .serializers import RawProblemSerializer, CleanProblemSerializer
+from django.shortcuts import get_object_or_404
 
 #---------------------------- RAW PROBLEMS ------------------------------
 class RawProblemList(APIView):
@@ -38,6 +39,9 @@ class RawProblemDetail(APIView):
     """
     authentication_classes = [authentication.TokenAuthentication]
     permission_classes = [permissions.IsAuthenticated]
+
+    def get_object(self, pk):
+        return get_object_or_404(RawProblem, pk=pk)
 
     def get(self, request, pk, format=None):
         problem = self.get_object(pk)
@@ -92,8 +96,11 @@ class CleanProblemDetail(APIView):
     authentication_classes = [authentication.TokenAuthentication]
     permission_classes = [permissions.IsAuthenticated]
 
+    def get_object(self, pk):
+        return get_object_or_404(CleanProblem, pk=pk)
+
     def get(self, request, pk, format=None):
-        problem = self.get_object(pk)
+        problem = get_object_or_404(CleanProblem, pk=pk)
         serializer = CleanProblemSerializer(problem)
         return Response(serializer.data)
 
