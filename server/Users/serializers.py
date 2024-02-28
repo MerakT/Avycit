@@ -41,6 +41,10 @@ class CustomRegisterSerializer(RegisterSerializer):
     class Meta:
         model = Usuario
 
+    def save(self):
+        self.validated_data['username'] = self.validated_data['email']
+        return super().save()
+
     def custom_signup(self, request, user):
         # General Data
         user.username = self.validated_data.get('email', '')
