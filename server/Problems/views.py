@@ -1,123 +1,106 @@
-from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import authentication, permissions
+from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView
 
 from .models import RawProblem, CleanProblem
 from .serializers import RawProblemSerializer, CleanProblemSerializer
-from django.shortcuts import get_object_or_404
+
+
+#---------------------------- PERMISSIONS ------------------------------
+class IsTesistaOrIsAdmin(permissions.BasePermission):
+    def has_object_permission(self, request, view, obj):
+        # Allow only users with the role 'admin' and the creator to delete problems
+        return request.user.role == 'admin' or request.user.role == "tesista"
+
+class IsApplicantOrIsAdmin(permissions.BasePermission):
+    def has_object_permission(self, request, view, obj):
+        # Allow only users with the role 'admin' and the creator to delete problems
+        return request.user.role == 'admin' or obj.applicant == request.user
+
+class OnlyAdmin(permissions.BasePermission):
+    def has_permission(self, request, view):
+        # Allow only users with the role 'admin' to create problems
+        return request.user.role == 'admin'
+    
+class OnlyApplicant(permissions.BasePermission):
+    def has_object_permission(self, request, view, obj):
+        # Allow only the creator to delete problems
+        return obj.applicant == request.user
+    
+#---------------------------- BASE ------------------------------
+class ProblemList(ListCreateAPIView):
+    authentication_classes = [authentication.TokenAuthentication]
+
+class ProblemDetail(RetrieveUpdateDestroyAPIView):
+    authentication_classes = [authentication.TokenAuthentication]
+
+    def get_object(self):
+        obj = super().get_object()
+        self.check_object_permissions(self.request, obj)
+        return obj
 
 #---------------------------- RAW PROBLEMS ------------------------------
-class RawProblemList(APIView):
-    """
-    List all problems, or create a new problem.
-    """
-    authentication_classes = [authentication.TokenAuthentication]
-    permission_classes = [permissions.IsAuthenticated]
+class RawProblemList(ProblemList):
+    queryset = RawProblem.objects.all()
+    serializer_class = RawProblemSerializer
 
-    def get(self, request, format=None):
-        # Allow only users with the role 'admin' to see all problems
-        if getattr(request.user, 'role', None) == 'admin': 
-            all_problems = RawProblem.objects.all()
-            serializer = RawProblemSerializer(all_problems, many=True)
-            return Response(serializer.data)
-        
-        # Send the problems to the user if they are the creator of the problem
-        problems = RawProblem.objects.filter(applicant=request.user)
-        serializer = RawProblemSerializer(problems, many=True)
-        return Response(serializer.data)
+    def get_permissions(self):
+        if self.request.method in ['POST']:
+            self.permission_classes = [permissions.IsAuthenticated, OnlyApplicant]
+        else:
+            self.permission_classes = [permissions.IsAuthenticated, IsApplicantOrIsAdmin]
+        return super(RawProblemList, self).get_permissions()
 
-    def post(self, request, format=None):
-        serializer = RawProblemSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save(applicant=request.user)
-            return Response(serializer.data, status=201)
-        return Response(serializer.errors, status=400)
+    def get_queryset(self):
+        if getattr(self.request.user, 'role', None) == 'admin':
+            return self.queryset
+        return self.queryset.filter(applicant=self.request.user)
+
+    def perform_create(self, serializer):
+        serializer.save(applicant=self.request.user)
     
-class RawProblemDetail(APIView):
-    """
-    Retrieve, update or delete a problem instance.
-    """
-    authentication_classes = [authentication.TokenAuthentication]
-    permission_classes = [permissions.IsAuthenticated]
+class RawProblemDetail(ProblemDetail):
+    queryset = RawProblem.objects.all()
+    serializer_class = RawProblemSerializer
 
-    def get_object(self, pk):
-        return get_object_or_404(RawProblem, pk=pk)
+    def get_permissions(self):
+        if self.request.method in ['PUT', 'PATCH', 'DELETE']:
+            self.permission_classes = [permissions.IsAuthenticated, OnlyApplicant]
+        else:
+            self.permission_classes = [permissions.IsAuthenticated, IsApplicantOrIsAdmin]
+        return super(RawProblemDetail, self).get_permissions()
 
-    def get(self, request, pk, format=None):
-        problem = self.get_object(pk)
-        serializer = RawProblemSerializer(problem)
-        return Response(serializer.data)
-
-    def put(self, request, pk, format=None):
-        # Allow only the creator to update problems
+    def update(self, request, *args, **kwargs):
+        problem = self.get_object()
         if request.user != problem.applicant:
             return Response(status=403)
-        
-        problem = self.get_object(pk)
-        serializer = RawProblemSerializer(problem, data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
-        return Response(serializer.errors, status=400)
+        return super().update(request, *args, **kwargs)
 
-    def delete(self, request, pk, format=None):
-        # Allow only users with the role 'admin' and the creator to delete problems
-        if getattr(request.user, 'role', None) != 'admin' and request.user != problem.applicant:
+    def delete(self, request, *args, **kwargs):
+        problem = self.get_object()
+        if request.user != problem.applicant:
             return Response(status=403)
-        
-        problem = self.get_object(pk)
-        problem.delete()
-        return Response(status=204)
+        return super().delete(request, *args, **kwargs)
 
 #------------------------------------------- CLEAN PROBLEMS -------------------------------------------
-class CleanProblemList(APIView):
-    """
-    List all problems, or create a new problem.
-    """
-    authentication_classes = [authentication.TokenAuthentication]
-    permission_classes = [permissions.IsAuthenticated]
+class CleanProblemList(ProblemList):
+    queryset = CleanProblem.objects.all()
+    serializer_class = CleanProblemSerializer
 
-    def get(self, request, format=None):
-        problems = CleanProblem.objects.all()
-        serializer = CleanProblemSerializer(problems, many=True)
-        return Response(serializer.data)
-
-    def post(self, request, format=None):
-        serializer = CleanProblemSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save(applicant=request.user)
-            return Response(serializer.data, status=201)
-        return Response(serializer.errors, status=400)
+    def get_permissions(self):
+        if self.request.method in ['POST']:
+            self.permission_classes = [permissions.IsAuthenticated, OnlyAdmin]
+        else:
+            self.permission_classes = [permissions.IsAuthenticated, IsTesistaOrIsAdmin]
+        return super(CleanProblemList, self).get_permissions()
     
-class CleanProblemDetail(APIView):
-    """
-    Retrieve, update or delete a problem instance.
-    """
-    authentication_classes = [authentication.TokenAuthentication]
-    permission_classes = [permissions.IsAuthenticated]
+class CleanProblemDetail(ProblemDetail):
+    queryset = CleanProblem.objects.all()
+    serializer_class = CleanProblemSerializer
 
-    def get_object(self, pk):
-        return get_object_or_404(CleanProblem, pk=pk)
-
-    def get(self, request, pk, format=None):
-        problem = get_object_or_404(CleanProblem, pk=pk)
-        serializer = CleanProblemSerializer(problem)
-        return Response(serializer.data)
-
-    def put(self, request, pk, format=None):
-        problem = self.get_object(pk)
-        serializer = CleanProblemSerializer(problem, data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
-        return Response(serializer.errors, status=400)
-
-    def delete(self, request, pk, format=None):
-        # Allow only users with the role 'admin' to delete problems
-        if getattr(request.user, 'role', None) != 'admin':
-            return Response(status=403)
-        
-        problem = self.get_object(pk)
-        problem.delete()
-        return Response(status=204)
-
+    def get_permissions(self):
+        if self.request.method in ['PUT', 'PATCH', 'DELETE']:
+            self.permission_classes = [permissions.IsAuthenticated, OnlyAdmin]
+        else:
+            self.permission_classes = [permissions.IsAuthenticated, IsTesistaOrIsAdmin]
+        return super(CleanProblemDetail, self).get_permissions()
