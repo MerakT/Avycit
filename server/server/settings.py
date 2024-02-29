@@ -101,6 +101,7 @@ WSGI_APPLICATION = 'server.wsgi.application'
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
 
 STATIC_URL = 'static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
@@ -128,10 +129,17 @@ if ON_RENDER:
                 "access_key": os.environ.get('AWS_ACCESS_KEY'),
                 "secret_key": os.environ.get('AWS_SECRET_ACCESS_KEY'),
                 "bucket_name": os.environ.get('AWS_STORAGE_BUCKET_NAME'),
+                "location": "media",
             },
         },
         "staticfiles": {
-            "BACKEND":'whitenoise.storage.CompressedManifestStaticFilesStorage',
+            "BACKEND": "storages.backends.s3boto3.S3Boto3Storage",
+            "OPTIONS": {
+                "access_key": os.environ.get('AWS_ACCESS_KEY'),
+                "secret_key": os.environ.get('AWS_SECRET_ACCESS_KEY'),
+                "bucket_name": os.environ.get('AWS_STORAGE_BUCKET_NAME'),
+                "location": "static",
+            },
         }
     }
 
