@@ -115,7 +115,7 @@ if ON_RENDER:
     DATABASES = {
     'default': dj_database_url.config(
         # Replace this value with your local database's connection string.
-        default='postgres://merakt:wc7ppIoBBAbMexdIfQjpN98Mfc0SxvwF@dpg-cnbm1uol5elc73fmb2a0-a.oregon-postgres.render.com/avicyt',
+        default='postgres://merakt:b9d62xWYEh8dSMUwz6IoxfK5ifouLsQC@dpg-cnnsmjqcn0vc73e5jpg0-a.oregon-postgres.render.com/avicyt_xsio',
         conn_max_age=600
     )
     }
@@ -142,15 +142,13 @@ if ON_RENDER:
     }
 
 else:
+
     DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.mysql',
-            'NAME': 'avicyt',
-            'USER': 'root',
-            'PORT': '3306',
-            'HOST': 'localhost',
-            'PASSWORD': 'andre0116',
-        }
+    'default': dj_database_url.config(
+        # Replace this value with your local database's connection string.
+        default='postgres://merakt:b9d62xWYEh8dSMUwz6IoxfK5ifouLsQC@dpg-cnnsmjqcn0vc73e5jpg0-a.oregon-postgres.render.com/avicyt_xsio',
+        conn_max_age=600
+    )
     }
 
 
@@ -199,7 +197,6 @@ ACCOUNT_USERNAME_REQUIRED = False
 ACCOUNT_AUTHENTICATION_METHOD = 'email'
 ACCOUNT_EMAIL_VERIFICATION = None
 ACCOUNT_SIGNUP_PASSWORD_ENTER_TWICE = False
-ACCOUNT_ADAPTER = 'Users.adapters.CustomAccountAdapter'
 
 # Rest_auth settings
 REST_AUTH = {
