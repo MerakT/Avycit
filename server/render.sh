@@ -6,9 +6,6 @@ cd server
 # Modify this line as needed for your package manager (pip, poetry, etc.)
 pip install -r requirements.txt
 
-# Create a superuser
-python manage.py createsuperuser --no-input --username admin --email user_admin@gmail.com --password admin
-
 # Convert static asset files
 #python manage.py collectstatic --no-input
 
