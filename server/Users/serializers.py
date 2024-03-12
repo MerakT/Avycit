@@ -32,7 +32,7 @@ class CustomLoginSerializer(LoginSerializer):
         return fields
     
 class CustomRegisterSerializer(RegisterSerializer):
-    username = None
+    username = serializers.CharField(required=False)
     email = serializers.EmailField(required=True)
     nombre = serializers.CharField(required=True)
     apellidos = serializers.CharField(required=True)
