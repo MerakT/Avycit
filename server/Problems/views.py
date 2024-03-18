@@ -40,7 +40,7 @@ class ProblemList(ListCreateAPIView):
             # For Raw Problems
             'title': 'title__icontains',
             'sector': 'sector',
-            'applicant_type': 'applicant__role',
+            'institution_type': 'institution_type',
             'status': 'raw_status',
             'is_supported': 'is_supported',
             # For Clean Problems
