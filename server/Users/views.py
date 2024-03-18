@@ -1,3 +1,9 @@
-from django.shortcuts import render
+from rest_framework.response import Response
+from rest_framework.generics import ListCreateAPIView
 
-# Create your views here.
+from .models import ProgAcad
+from .serializers import ProgAcadSerializer
+
+class ProgAcadList(ListCreateAPIView):
+    queryset = ProgAcad.objects.all()
+    serializer_class = ProgAcadSerializer

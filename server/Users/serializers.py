@@ -2,7 +2,7 @@ from dj_rest_auth.serializers import LoginSerializer, TokenSerializer
 from dj_rest_auth.registration.serializers import RegisterSerializer
 from rest_framework import serializers
 
-from .models import Usuario
+from .models import Usuario, ProgAcad
 
 
 class CustomTokenSerializer(TokenSerializer):
@@ -94,3 +94,8 @@ class UserDetailsSerializer(serializers.ModelSerializer):
             'charge', 
             'area'
         ]
+
+class ProgAcadSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ProgAcad
+        fields = ['id', 'name']
