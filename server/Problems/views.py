@@ -53,9 +53,9 @@ class ProblemList(ListCreateAPIView):
         }
 
         or_filter_params = {
-            'career_1': 'career_1',
-            'career_2': 'career_2',
-            'career_3': 'career_3',
+            'career_1': 'career_1__name__icontains',
+            'career_2': 'career_2__name__icontains',
+            'career_3': 'career_3__name__icontains',
         }
 
         # Iterate over the dictionary and filter the queryset
