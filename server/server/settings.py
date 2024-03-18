@@ -1,4 +1,5 @@
 from pathlib import Path
+import dj_database_url
 import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -9,6 +10,7 @@ SECRET_KEY = os.environ.get('DJANGO_KEY') or 'django-insecure-$2itfu&rqrovvldye3
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get('DEBUG') or True
+ON_RENDER = os.environ.get('ON_RENDER') or False
 
 # SECURITY WARNING: don't run with debug turned on in production!
 ALLOWED_HOSTS = ['*']
@@ -62,6 +64,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware', # Whitenoise
     'corsheaders.middleware.CorsMiddleware', # CORS
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -94,19 +97,59 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'server.wsgi.application'
 
+# Static files (CSS, JavaScript, Images)
+# https://docs.djangoproject.com/en/5.0/howto/static-files/
+
+STATIC_URL = 'static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'avicyt',
-        'USER': 'root',
-        'PORT': '3306',
-        'HOST': 'localhost',
-        'PASSWORD': 'andre0116',
+# For Media Files
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+if ON_RENDER:
+
+    DATABASES = {
+    'default': dj_database_url.config(
+        # Replace this value with your local database's connection string.
+        default='postgres://merakt:b9d62xWYEh8dSMUwz6IoxfK5ifouLsQC@dpg-cnnsmjqcn0vc73e5jpg0-a.oregon-postgres.render.com/avicyt_xsio',
+        conn_max_age=600
+    )
     }
-}
+    
+    STORAGES = {
+        "default": {
+            "BACKEND": "storages.backends.s3.S3Storage",
+            "OPTIONS": {
+                "access_key": os.environ.get('AWS_ACCESS_KEY'),
+                "secret_key": os.environ.get('AWS_SECRET_ACCESS_KEY'),
+                "bucket_name": os.environ.get('AWS_STORAGE_BUCKET_NAME'),
+                "location": "media",
+            },
+        },
+        "staticfiles": {
+            "BACKEND": "storages.backends.s3boto3.S3Boto3Storage",
+            "OPTIONS": {
+                "access_key": os.environ.get('AWS_ACCESS_KEY'),
+                "secret_key": os.environ.get('AWS_SECRET_ACCESS_KEY'),
+                "bucket_name": os.environ.get('AWS_STORAGE_BUCKET_NAME'),
+                "location": "static",
+            },
+        }
+    }
+
+else:
+
+    DATABASES = {
+    'default': dj_database_url.config(
+        # Replace this value with your local database's connection string.
+        default='postgres://merakt:b9d62xWYEh8dSMUwz6IoxfK5ifouLsQC@dpg-cnnsmjqcn0vc73e5jpg0-a.oregon-postgres.render.com/avicyt_xsio',
+        conn_max_age=600
+    )
+    }
 
 
 # Password validation
@@ -134,11 +177,6 @@ USE_I18N = True
 USE_TZ = True
 
 
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/5.0/howto/static-files/
-
-STATIC_URL = 'static/'
-
 AUTHENTUCATION_BACKENDS = [
     'django.contrib.auth.backends.ModelBackend',
     'allauth.account.auth_backends.AuthenticationBackend',
@@ -152,31 +190,30 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 AUTH_USER_MODEL = 'Users.Usuario'
 
 # Allauth account settings
-ACCOUNT_AUTHENTICATION_METHOD = 'email'
+ACCOUNT_USER_MODEL_USERNAME_FIELD = 'email'
 ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_UNIQUE_EMAIL = True
 ACCOUNT_USERNAME_REQUIRED = False
-USERNAME_REQUIRED = False
+ACCOUNT_AUTHENTICATION_METHOD = 'email'
 ACCOUNT_EMAIL_VERIFICATION = None
-ACCOUNT_CONFIRM_EMAIL_ON_GET = False
-ACCAUNT_MODEL_USERNAME_FIELD = None
+ACCOUNT_SIGNUP_PASSWORD_ENTER_TWICE = False
+ACCOUNT_ADAPTER = 'Users.adapters.CustomAccountAdapter'
 
 # Rest_auth settings
 REST_AUTH = {
     'LOGIN_SERIALIZER': 'Users.serializers.CustomLoginSerializer',
     'TOKEN_SERIALIZER': 'Users.serializers.CustomTokenSerializer',  #Esto es por si necesitamos más adelante
     'REGISTER_SERIALIZER': 'Users.serializers.CustomRegisterSerializer',
-    'USER_DETAILS_SERIALIZER': 'Users.serializers.UserSerializer',
+    'USER_DETAILS_SERIALIZER': 'Users.serializers.UserDetailsSerializer',
 
 }
 
 # Rest Framework settings
-if not DEBUG:
-    REST_FRAMEWORK = {
-        'DEFAULT_AUTHENTICATION_CLASSES': [
-            'rest_framework.authentication.SessionAuthentication',
-            'rest_framework.authentication.TokenAuthentication',
-        ],
-    }
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.SessionAuthentication',
+        'rest_framework.authentication.TokenAuthentication',
+    ],
+}
 
 # Social Auth

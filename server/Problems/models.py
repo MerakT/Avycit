@@ -30,6 +30,7 @@ class RawProblem(models.Model):
         choices=RAW_STATUTES,
         default='en revision',
     )
+    is_supported = models.BooleanField(default=False)
     observation = models.TextField(blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

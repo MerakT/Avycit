@@ -3,22 +3,7 @@ from dj_rest_auth.registration.serializers import RegisterSerializer
 from rest_framework import serializers
 
 from .models import Usuario
-from Docs.models import FirmaDigital
 
-class UserSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Usuario
-        exclude = (
-            'password', 
-            'is_superuser', 
-            'is_staff', 
-            'is_active', 
-            'date_joined', 
-            'last_login', 
-            'groups',
-            'user_permissions',
-            'registration_method',
-        )
 
 class CustomTokenSerializer(TokenSerializer):
 
@@ -29,19 +14,19 @@ class CustomTokenSerializer(TokenSerializer):
         fields = ['key', 'user']
         
     def get_user(self, obj):
-        # Use the CustomUserDetailsSerializer to serialize the user data
-        user_serializer = UserSerializer(obj.user)
+        # Use the UserDetailsSerializer to serialize the user data
+        user_serializer = UserDetailsSerializer(obj.user)
         return user_serializer.data
 
 class CustomLoginSerializer(LoginSerializer):
     email = serializers.EmailField(required=True)
-    password = serializers.CharField(required=True)
+    password = serializers.CharField(style={'input_type': 'password'})
 
     def get_response_serializer(self):
         return CustomTokenSerializer
-
+    
     def get_fields(self):
-        fields = super(CustomLoginSerializer, self).get_fields()
+        fields = super().get_fields()
         fields['email'] = fields['username']
         del fields['username']
         return fields
@@ -58,10 +43,7 @@ class CustomRegisterSerializer(RegisterSerializer):
 
     def custom_signup(self, request, user):
         # General Data
-        if self.validated_data.get('username', ''):
-            user.username = self.validated_data.get('username', '')
-        else:
-            user.username = self.validated_data.get('email', '')
+        user.username = self.validated_data.get('email', '')
         user.email = self.validated_data.get('email', '')
         user.first_name = self.validated_data.get('nombre', '')
         user.last_name = self.validated_data.get('apellidos', '')
@@ -87,3 +69,28 @@ class CustomRegisterSerializer(RegisterSerializer):
         user.save()
         return super().custom_signup(request, user)
     
+class UserDetailsSerializer(serializers.ModelSerializer):
+    # Get the signature photo URL
+    signature_photo = serializers.ImageField(use_url=True)
+
+    class Meta:
+        model = Usuario
+        fields = [
+            'id', 
+            'email', 
+            'first_name', 
+            'last_name', 
+            'role', 
+            'career', 
+            'code', 
+            'grado', 
+            'signature_photo', 
+            'dni', 
+            'ruc', 
+            'razon_social', 
+            'phone', 
+            'address', 
+            'can_finance', 
+            'charge', 
+            'area'
+        ]
