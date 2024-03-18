@@ -19,14 +19,33 @@ class UserProblemSerializer(serializers.ModelSerializer):
             'charge',
             'area',
         ]
+
+class SimpleRawProblemSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = RawProblem
+        fields = '__all__'
+
+class SimpleCleanProblemSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CleanProblem
+        fields = '__all__'
 class RawProblemSerializer(serializers.ModelSerializer):
     applicant = UserProblemSerializer(read_only=True)
+    clean_data = serializers.SerializerMethodField()
+
+    def get_clean_data(self, obj):
+        try:
+            clean_problem = CleanProblem.objects.get(raw_problem=obj.id)
+            return SimpleCleanProblemSerializer(clean_problem).data
+        except CleanProblem.DoesNotExist:
+            return None
+
     class Meta:
         model = RawProblem
         fields='__all__'
 
 class CleanProblemSerializer(serializers.ModelSerializer):
-    raw_problem = RawProblemSerializer(read_only=True)
+    raw_problem = SimpleRawProblemSerializer(read_only=True)
     class Meta:
         model = CleanProblem
         fields='__all__'
