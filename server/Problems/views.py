@@ -138,25 +138,21 @@ class CleanProblemList(ProblemList):
     queryset = CleanProblem.objects.all()
     serializer_class = CleanProblemSerializer
 
-    def get_queryset(self):
-        queryset = super().get_queryset()
-
-        if getattr(self.request.user, 'role', None) == 'admin':
-            queryset = queryset.filter(applicant=self.request.user)
-        
-        return queryset
-    
-    def perform_create(self, serializer):
-        if getattr(self.request.user, 'role', None) != 'admin':
-            raise PermissionError("Only admins can create clean problems")
-        serializer.save(applicant=self.request.user)
-
     def get_permissions(self):
         if self.request.method in ['POST']:
             self.permission_classes = [permissions.IsAuthenticated, OnlyAdmin]
         else:
             self.permission_classes = [permissions.IsAuthenticated, IsTesistaOrIsAdmin]
         return super(CleanProblemList, self).get_permissions()
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        return queryset
+    
+    def perform_create(self, serializer):
+        if getattr(self.request.user, 'role', None) != 'admin':
+            raise PermissionError("Only admins can create clean problems")
+        serializer.save(applicant=self.request.user)
     
 class CleanProblemDetail(ProblemDetail):
     queryset = CleanProblem.objects.all()
