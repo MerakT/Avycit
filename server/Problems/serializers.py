@@ -26,6 +26,7 @@ class RawProblemSerializer(serializers.ModelSerializer):
         fields='__all__'
 
 class CleanProblemSerializer(serializers.ModelSerializer):
+    raw_problem = RawProblemSerializer(read_only=True)
     class Meta:
         model = CleanProblem
         fields='__all__'
