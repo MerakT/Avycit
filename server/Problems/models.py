@@ -1,6 +1,6 @@
 from django.db import models
 
-from Users.models import Usuario
+from Users.models import Usuario, ProgAcad
 
 RAW_STATUTES = [
     ('en revision', 'En revisión'),
@@ -43,9 +43,9 @@ class CleanProblem(models.Model):
     clean_title = models.CharField(max_length=150)
     clean_description = models.TextField()
     clean_sector = models.CharField(max_length=150)
-    career_1 = models.CharField(max_length=150)
-    career_2 = models.CharField(max_length=150, blank=True, null=True)
-    career_3 = models.CharField(max_length=150, blank=True, null=True)
+    career_1 = models.ForeignKey(ProgAcad, on_delete=models.CASCADE, related_name='career_1')
+    career_2 = models.ForeignKey(ProgAcad, on_delete=models.CASCADE, related_name='career_2', blank=True, null=True)
+    career_3 = models.ForeignKey(ProgAcad, on_delete=models.CASCADE, related_name='career_3', blank=True, null=True)
     economic_support = models.IntegerField(default=0)
     social_support = models.IntegerField(default=0)
     enviromental_support = models.IntegerField(default=0)
