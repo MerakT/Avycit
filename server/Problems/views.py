@@ -2,10 +2,12 @@ from rest_framework.response import Response
 from rest_framework import authentication, permissions
 from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView
 
-from .models import RawProblem, CleanProblem
-from .serializers import RawProblemSerializer, CleanProblemSerializer
+from .models import RawProblem, CleanProblem, RAW_STATUTES
+from .serializers import RawProblemSerializer, CleanProblemSerializer, SimpleCleanProblemSerializer, SimpleRawProblemSerializer
 
 from django.db.models import Q
+
+from Notis.models import Noti
 
 #---------------------------- PERMISSIONS ------------------------------
 class IsTesistaOrIsAdmin(permissions.BasePermission):
@@ -115,8 +117,10 @@ class RawProblemDetail(ProblemDetail):
     serializer_class = RawProblemSerializer
 
     def get_permissions(self):
-        if self.request.method in ['PUT', 'PATCH', 'DELETE']:
+        if self.request.method in ['PUT', 'PATCH']:
             self.permission_classes = [permissions.IsAuthenticated, OnlyApplicant]
+        if self.request.method in ['DELETE']:
+            self.permission_classes = [permissions.IsAuthenticated, OnlyAdmin]
         else:
             self.permission_classes = [permissions.IsAuthenticated, IsApplicantOrIsAdmin]
         return super(RawProblemDetail, self).get_permissions()
@@ -136,13 +140,13 @@ class RawProblemDetail(ProblemDetail):
 #------------------------------------------- CLEAN PROBLEMS -------------------------------------------
 class CleanProblemList(ProblemList):
     queryset = CleanProblem.objects.all()
-    serializer_class = CleanProblemSerializer
+    serializer_class = SimpleCleanProblemSerializer
 
     def get_permissions(self):
-        if self.request.method in ['POST']:
-            self.permission_classes = [permissions.IsAuthenticated, OnlyAdmin]
-        else:
+        if self.request.method in ['GET']:
             self.permission_classes = [permissions.IsAuthenticated, IsTesistaOrIsAdmin]
+        else:
+            self.permission_classes = [permissions.IsAuthenticated, OnlyAdmin]
         return super(CleanProblemList, self).get_permissions()
 
     def get_queryset(self):
@@ -152,7 +156,23 @@ class CleanProblemList(ProblemList):
     def perform_create(self, serializer):
         if getattr(self.request.user, 'role', None) != 'admin':
             raise PermissionError("Only admins can create clean problems")
-        serializer.save(applicant=self.request.user)
+        # Get the linked raw problem
+        raw_problem = serializer.validated_data.get('raw_problem')
+        raw_problem = RawProblem.objects.get(id=raw_problem.id)
+        # Update the status of the raw problem
+        raw_problem.raw_status = RAW_STATUTES[2][0]
+        raw_problem.save()
+
+        # Create a notification for the applicant
+        noti_number = Noti.objects.filter(sent_to=raw_problem.applicant).count() + 1
+        Noti.objects.create(
+            subject="Problema limpio creado",
+            message=f"El caso de tesis '{serializer.validated_data.get('title')}' basado en su problema {raw_problem.title} ha sido creado exitosamente",
+            sent_to=raw_problem.applicant,
+            sent_by=self.request.user,
+            noti_number=noti_number
+        )
+        serializer.save()
     
 class CleanProblemDetail(ProblemDetail):
     queryset = CleanProblem.objects.all()
@@ -164,3 +184,20 @@ class CleanProblemDetail(ProblemDetail):
         else:
             self.permission_classes = [permissions.IsAuthenticated, IsTesistaOrIsAdmin]
         return super(CleanProblemDetail, self).get_permissions()
+    
+    def delete(self, request, *args, **kwargs):
+        clean_problem = self.get_object()
+        raw_problem = clean_problem.raw_problem
+        raw_problem.raw_status = RAW_STATUTES[0][0]
+        raw_problem.save()
+
+        # Create a notification for the applicant
+        noti_number = Noti.objects.filter(sent_to=raw_problem.applicant).count() + 1
+        Noti.objects.create(
+            subject="Problema limpio eliminado",
+            message=f"El caso de tesis '{clean_problem.clean_title}' basado en su problema {raw_problem.title} ha sido eliminado exitosamente"   ,
+            sent_to=raw_problem.applicant,
+            sent_by=self.request.user,
+            noti_number=noti_number
+        )
+        return super().delete(request, *args, **kwargs)
