@@ -94,6 +94,7 @@ class UserDetailsSerializer(serializers.ModelSerializer):
             'charge', 
             'area'
         ]
+        read_only_fields = ['id', 'email', 'role', 'career', 'code']
 
 class ProgAcadSerializer(serializers.ModelSerializer):
     class Meta:
