@@ -161,18 +161,21 @@ class CleanProblemList(ProblemList):
         raw_problem = RawProblem.objects.get(id=raw_problem.id)
         # Update the status of the raw problem
         raw_problem.raw_status = RAW_STATUTES[2][0]
-        raw_problem.save()
-
-        # Create a notification for the applicant
-        noti_number = Noti.objects.filter(sent_to=raw_problem.applicant).count() + 1
-        Noti.objects.create(
-            subject="Problema limpio creado",
-            message=f"El caso de tesis '{serializer.validated_data.get('title')}' basado en su problema {raw_problem.title} ha sido creado exitosamente",
-            sent_to=raw_problem.applicant,
-            sent_by=self.request.user,
-            noti_number=noti_number
-        )
-        serializer.save()
+        try:
+            raw_problem.save()
+        
+            # Create a notification for the applicant
+            noti_number = Noti.objects.filter(sent_to=raw_problem.applicant).count() + 1
+            Noti.objects.create(
+                subject="Problema limpio creado",
+                message=f"El caso de tesis '{serializer.validated_data.get('title')}' basado en su problema {raw_problem.title} ha sido creado exitosamente",
+                sent_to=raw_problem.applicant,
+                sent_by=self.request.user,
+                noti_number=noti_number
+            )
+            serializer.save()
+        except Exception as e:
+            return Response(str(e), status=400)
     
 class CleanProblemDetail(ProblemDetail):
     queryset = CleanProblem.objects.all()

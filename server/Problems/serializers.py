@@ -36,10 +36,10 @@ class RawProblemSerializer(serializers.ModelSerializer):
 
     def get_clean_data(self, obj):
         try:
-            clean_problems = CleanProblem.objects.filter(raw_problem=obj.id)
-            if not clean_problems:
+            clean_problem = CleanProblem.objects.get(raw_problem=obj.id)
+            if not clean_problem:
                 return None
-            return SimpleCleanProblemSerializer(clean_problems, many=True).data
+            return SimpleCleanProblemSerializer(clean_problem).data
         except CleanProblem.DoesNotExist:
             return None
 

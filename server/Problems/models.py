@@ -51,8 +51,17 @@ class CleanProblem(models.Model):
     enviromental_support = models.IntegerField(default=0)
     importancy = models.IntegerField(default=0)
 
+    # Override the save method to calculate the importancy and refuse creation if there is a raw problem associated with another clean problem
+    def save(self, *args, **kwargs):
+        if self.pk is None:
+            clean_problem_with_raw_associated = CleanProblem.objects.get(raw_problem=self.raw_problem)
+            if clean_problem_with_raw_associated:
+                raise Exception('There is already a clean problem associated with this raw problem')
+            self.importancy = int((self.economic_support + self.social_support + self.enviromental_support) / 3)
+        super(CleanProblem, self).save(*args, **kwargs)
+
     def __str__(self):
-        return self.raw_problem.title
+        return f'{self.clean_title} - Basado en => " {self.raw_problem.title}"'
     
 class TakenProblems(models.Model):
     problem = models.ForeignKey(CleanProblem, on_delete=models.CASCADE)
@@ -66,3 +75,10 @@ class TakenProblems(models.Model):
     
     def __str__(self):
         return self.problem.title + ' - ' + self.student.first_name + ' ' + self.student.last_name
+    
+#-------------------------------------- VRI DATA ------------------------------------
+class VRIProblemData(models.Model):
+    raw_problem = models.ForeignKey(RawProblem, on_delete=models.CASCADE)
+    vri_title = models.CharField(max_length=150)
+    economic_fond = models.IntegerField(default=0)
+    is_viable = models.BooleanField(default=False)
