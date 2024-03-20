@@ -34,6 +34,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.sites', # For allauth
 
     # Rest Framework
     'rest_framework',
@@ -59,13 +60,15 @@ INSTALLED_APPS = [
     'Bot',
     'Problems',
     'Tesis',
-
 ]
+
+SITE_ID = 1 # For allauth
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware', # Whitenoise
     'corsheaders.middleware.CorsMiddleware', # CORS
+    'allauth.account.middleware.AccountMiddleware', # ALL AUTH MIDDLEWARE
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -187,18 +190,6 @@ AUTHENTUCATION_BACKENDS = [
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-AUTH_USER_MODEL = 'Users.Usuario'
-
-# Allauth account settings
-ACCOUNT_USER_MODEL_USERNAME_FIELD = 'email'
-ACCOUNT_EMAIL_REQUIRED = True
-ACCOUNT_UNIQUE_EMAIL = True
-ACCOUNT_USERNAME_REQUIRED = False
-ACCOUNT_AUTHENTICATION_METHOD = 'email'
-ACCOUNT_EMAIL_VERIFICATION = None
-ACCOUNT_SIGNUP_PASSWORD_ENTER_TWICE = False
-ACCOUNT_ADAPTER = 'Users.adapters.CustomAccountAdapter'
-
 # Rest_auth settings
 REST_AUTH = {
     'LOGIN_SERIALIZER': 'Users.serializers.CustomLoginSerializer',
@@ -215,5 +206,35 @@ REST_FRAMEWORK = {
         'rest_framework.authentication.TokenAuthentication',
     ],
 }
+
+# Allauth account settings
+AUTH_USER_MODEL = 'Users.Usuario'
+ACCOUNT_USER_MODEL_USERNAME_FIELD = 'email'
+ACCOUNT_EMAIL_REQUIRED = True
+ACCOUNT_UNIQUE_EMAIL = True
+ACCOUNT_USERNAME_REQUIRED = False
+ACCOUNT_AUTHENTICATION_METHOD = 'email'
+ACCOUNT_EMAIL_VERIFICATION = None
+ACCOUNT_SIGNUP_PASSWORD_ENTER_TWICE = False
+ACCOUNT_ADAPTER = 'Users.adapters.CustomAccountAdapter'
+
+# Email Settings
+# https://docs.djangoproject.com/en/5.0/topics/email/
+#EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend" # For development, Sends the email to the console
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+EMAIL_HOST = "smtp.gmail.com"                                   # Your email host
+EMAIL_USE_TLS = True                                            # True
+EMAIL_PORT = 587                                                # 587
+EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER')             # your email address
+EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')     # your password
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER                            # email ending with @sendinblue.com
+
+# <EMAIL_CONFIRM_REDIRECT_BASE_URL>/<key>
+EMAIL_CONFIRM_REDIRECT_BASE_URL = \
+    "<your frontend link>" # Send the Key to the frontend to make the request on the backend
+
+# <PASSWORD_RESET_CONFIRM_REDIRECT_BASE_URL>/<uidb64>/<token>
+PASSWORD_RESET_CONFIRM_REDIRECT_BASE_URL = \
+    "<your frontend link>" # Send the UIDB64 and Token to the frontend to make the request on the backend
 
 # Social Auth
