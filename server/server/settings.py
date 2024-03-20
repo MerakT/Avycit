@@ -118,7 +118,7 @@ if ON_RENDER:
     DATABASES = {
     'default': dj_database_url.config(
         # Replace this value with your local database's connection string.
-        default='postgres://merakt:b9d62xWYEh8dSMUwz6IoxfK5ifouLsQC@dpg-cnnsmjqcn0vc73e5jpg0-a.oregon-postgres.render.com/avicyt_xsio',
+        default='postgres://merakt:kuGKGiCwnkGGcjtYzmXfFIaOgsnYzpta@dpg-cntlos6n7f5s7382bsmg-a.oregon-postgres.render.com/avicyt_k7tx',
         conn_max_age=600
     )
     }
@@ -149,7 +149,7 @@ else:
     DATABASES = {
     'default': dj_database_url.config(
         # Replace this value with your local database's connection string.
-        default='postgres://merakt:b9d62xWYEh8dSMUwz6IoxfK5ifouLsQC@dpg-cnnsmjqcn0vc73e5jpg0-a.oregon-postgres.render.com/avicyt_xsio',
+        default='postgres://merakt:kuGKGiCwnkGGcjtYzmXfFIaOgsnYzpta@dpg-cntlos6n7f5s7382bsmg-a.oregon-postgres.render.com/avicyt_k7tx',
         conn_max_age=600
     )
     }
