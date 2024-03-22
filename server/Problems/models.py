@@ -1,4 +1,5 @@
 from django.db import models
+from django.core.exceptions import ObjectDoesNotExist
 
 from Users.models import Usuario, ProgAcad
 
@@ -54,10 +55,11 @@ class CleanProblem(models.Model):
     # Override the save method to calculate the importancy and refuse creation if there is a raw problem associated with another clean problem
     def save(self, *args, **kwargs):
         if self.pk is None:
-            clean_problem_with_raw_associated = CleanProblem.objects.get(raw_problem=self.raw_problem)
-            if clean_problem_with_raw_associated:
+            try:
+                clean_problem_with_raw_associated = CleanProblem.objects.get(raw_problem=self.raw_problem)
                 raise Exception('There is already a clean problem associated with this raw problem')
-            self.importancy = int((self.economic_support + self.social_support + self.enviromental_support) / 3)
+            except ObjectDoesNotExist:
+                self.importancy = int((self.economic_support + self.social_support + self.enviromental_support) / 3)
         super(CleanProblem, self).save(*args, **kwargs)
 
     def __str__(self):
