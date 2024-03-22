@@ -231,7 +231,7 @@ DEFAULT_FROM_EMAIL = EMAIL_HOST_USER                            # email ending w
 
 # <EMAIL_CONFIRM_REDIRECT_BASE_URL>/<key>
 EMAIL_CONFIRM_REDIRECT_BASE_URL = \
-    "<your frontend link>" # Send the Key to the frontend to make the request on the backend
+    "http://localhost:3000/verify_email_redirect/?key=" # Send the Key to the frontend to make the request on the backend
 
 # <PASSWORD_RESET_CONFIRM_REDIRECT_BASE_URL>/<uidb64>/<token>
 PASSWORD_RESET_CONFIRM_REDIRECT_BASE_URL = \
