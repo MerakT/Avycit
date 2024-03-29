@@ -1,7 +1,7 @@
 from django.db import models
 
 from Users.models import Usuario
-from Problems.models import CleanProblem
+from Problems.models import RawProblem
 
 #---------------------------- PARA LA FICHA PRELIMINAR ----------------------------
 CREATED_OPTIONS = [
@@ -9,32 +9,64 @@ CREATED_OPTIONS = [
     ('propio', 'Propio')
 ]
 
-class FichaPreliminar(models.Model):
-    problem_description = models.TextField()
-    title_ficha = models.CharField(max_length=150)
-    obj_gen = models.TextField()
-    hipo_gen = models.TextField()
-    bank_problem = models.ForeignKey(CleanProblem, on_delete=models.CASCADE, blank=True, null=True)
-    created_option = models.CharField(
-        max_length=6,
-        choices=CREATED_OPTIONS,
-        default='propio',
-    )
-    student_ficha  = models.ForeignKey(Usuario, on_delete=models.CASCADE)
+STATUS_CHOICES = [
+    ('pendiente', 'Pendiente'),
+    ('aceptado', 'Aceptado'),
+]
 
+class PropuestaTesis(models.Model):
+    propuesta_raw = models.ForeignKey(RawProblem, on_delete=models.CASCADE)
+    donde = models.CharField(max_length=300)
+    quienes = models.CharField(max_length=300)
+    problema = models.CharField(max_length=300)
+    # Lote 1
+    propuesta_title = models.CharField(max_length=150)
+    propuesta_problem = models.TextField()
+    propuesta_objetive = models.TextField()
+    propuesta_hipotesis = models.TextField()
+    # Lote 2
+    investigation_type = models.CharField(max_length=50)
+    focus = models.CharField(max_length=50)
+    level = models.CharField(max_length=50)  
+    design = models.CharField(max_length=50)
+
+# Lote 1
+class Causas(models.Model):
+    propuesta = models.ForeignKey(PropuestaTesis, on_delete=models.CASCADE)
+    description = models.TextField()
+
+class Consecuencias(models.Model):
+    propuesta = models.ForeignKey(PropuestaTesis, on_delete=models.CASCADE)
+    description = models.TextField()
+
+class Aportes(models.Model):
+    propuesta = models.ForeignKey(PropuestaTesis, on_delete=models.CASCADE)
+    description = models.TextField()
+
+# Lote 2
 class Variables(models.Model):
-    ficha = models.ForeignKey(FichaPreliminar, on_delete=models.CASCADE)
+    propuesta = models.ForeignKey(PropuestaTesis, on_delete=models.CASCADE)
     name_variable = models.CharField(max_length=150)
     type_variable = models.CharField(max_length=150)
     justification = models.TextField()
     
 class ObjetivosEsp(models.Model):
-    ficha = models.ForeignKey(FichaPreliminar, on_delete=models.CASCADE)
+    propuesta = models.ForeignKey(PropuestaTesis, on_delete=models.CASCADE)
     description = models.TextField()
 
 class HipotesisEsp(models.Model):
-    ficha = models.ForeignKey(FichaPreliminar, on_delete=models.CASCADE)
+    propuesta = models.ForeignKey(PropuestaTesis, on_delete=models.CASCADE)
     description = models.TextField()
+
+class Postulaciones(models.Model):
+    propuesta = models.ForeignKey(PropuestaTesis, on_delete=models.CASCADE)
+    tesista = models.ForeignKey(Usuario, on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True)
+    status = models.CharField(
+        max_length=12,
+        choices= STATUS_CHOICES,
+        default='pendiente',
+        )
 
 #----------------------------- PARA LA TESIS ---------------------------------------------
 STATUS_CHOICES = [
@@ -66,7 +98,7 @@ class Observaciones(models.Model):
 
 #------------------------------- UTILIDADES MODELOS ------------------------------
 class Metodologia(models.Model):
-    ficha = models.ForeignKey(FichaPreliminar, on_delete=models.CASCADE)
+    ficha = models.ForeignKey(PropuestaTesis, on_delete=models.CASCADE)
     linea = models.CharField(max_length=150)
     nivel = models.CharField(max_length=150)
     sub_linea = models.CharField(max_length=150)
