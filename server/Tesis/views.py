@@ -74,7 +74,7 @@ class PropuestaTesisList(ListCreateAPIView):
             coordinators = Usuario.objects.filter(role='coordinador', career=self.request.user.career)
             for coordinator in coordinators:
                 Noti.objects.create(
-                subject='Propuesta de Tesis',
+                subject='Propuesta de Tesis Creada',
                 sent_by=self.request.user,
                 sent_to=coordinator,
                 message='Se ha creado una propuesta de tesis',
@@ -98,7 +98,7 @@ class PropuestaTesisDetail(RetrieveUpdateDestroyAPIView):
     def perform_destroy(self, instance):
         try:
             Noti.objects.create(
-                subject='Propuesta de Tesis',
+                subject='Propuesta de Tesis Eliminada',
                 sent_by=self.request.user,
                 sent_to=instance.tesista,
                 message='Tu propuesta de tesis ha sido eliminada',
