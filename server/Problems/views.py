@@ -140,7 +140,7 @@ class RawProblemDetail(ProblemDetail):
 #------------------------------------------- CLEAN PROBLEMS -------------------------------------------
 class CleanProblemList(ProblemList):
     queryset = CleanProblem.objects.all()
-    serializer_class = SimpleCleanProblemSerializer
+    serializer_class = CleanProblemSerializer
 
     def get_permissions(self):
         if self.request.method in ['GET']:
