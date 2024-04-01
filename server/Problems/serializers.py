@@ -1,6 +1,8 @@
 from rest_framework import serializers
 from .models import RawProblem, CleanProblem
 from Users.models import Usuario
+from Tesis.models import Postulaciones
+from Tesis.serializers import SimplePostulacionesSerializer
 
 class UserProblemSerializer(serializers.ModelSerializer):
     class Meta:
@@ -33,6 +35,7 @@ class SimpleCleanProblemSerializer(serializers.ModelSerializer):
 class RawProblemSerializer(serializers.ModelSerializer):
     applicant = UserProblemSerializer(read_only=True)
     clean_data = serializers.SerializerMethodField()
+    postulations = serializers.SerializerMethodField()
 
     def get_clean_data(self, obj):
         try:
@@ -42,6 +45,12 @@ class RawProblemSerializer(serializers.ModelSerializer):
             return SimpleCleanProblemSerializer(clean_problem).data
         except CleanProblem.DoesNotExist:
             return None
+        
+    def get_postulations(self, obj):
+        postulations = Postulaciones.objects.filter(problem=obj.id)
+        if not postulations:
+            return None
+        return SimplePostulacionesSerializer(postulations, many=True).data
 
     class Meta:
         model = RawProblem

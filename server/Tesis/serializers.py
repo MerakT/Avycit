@@ -18,6 +18,11 @@ class UserThesisSerializer(serializers.ModelSerializer):
             'dni',
         ]
 
+class SimplePostulacionesSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Postulaciones
+        fields = '__all__'
+
 class PostulacionesSerializer(serializers.ModelSerializer):
     tesista = UserThesisSerializer(read_only=True)
     class Meta:
