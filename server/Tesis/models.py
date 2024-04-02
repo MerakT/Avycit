@@ -32,30 +32,30 @@ class PropuestaTesis(models.Model):
 
 # Lote 1
 class Causas(models.Model):
-    propuesta = models.ForeignKey(PropuestaTesis, on_delete=models.CASCADE)
+    propuesta = models.ForeignKey(PropuestaTesis, on_delete=models.CASCADE, default=1)
     description = models.TextField()
 
 class Consecuencias(models.Model):
-    propuesta = models.ForeignKey(PropuestaTesis, on_delete=models.CASCADE)
+    propuesta = models.ForeignKey(PropuestaTesis, on_delete=models.CASCADE, default=1)
     description = models.TextField()
 
 class Aportes(models.Model):
-    propuesta = models.ForeignKey(PropuestaTesis, on_delete=models.CASCADE)
+    propuesta = models.ForeignKey(PropuestaTesis, on_delete=models.CASCADE, default=1)
     description = models.TextField()
 
 # Lote 2
 class Variables(models.Model):
-    propuesta = models.ForeignKey(PropuestaTesis, on_delete=models.CASCADE)
+    propuesta = models.ForeignKey(PropuestaTesis, on_delete=models.CASCADE, default=1)
     name_variable = models.CharField(max_length=150)
     type_variable = models.CharField(max_length=150)
     justification = models.TextField()
     
 class ObjetivosEsp(models.Model):
-    propuesta = models.ForeignKey(PropuestaTesis, on_delete=models.CASCADE)
+    propuesta = models.ForeignKey(PropuestaTesis, on_delete=models.CASCADE, default=1)
     description = models.TextField()
 
 class HipotesisEsp(models.Model):
-    propuesta = models.ForeignKey(PropuestaTesis, on_delete=models.CASCADE)
+    propuesta = models.ForeignKey(PropuestaTesis, on_delete=models.CASCADE, default=1)
     description = models.TextField()
 
 class Postulaciones(models.Model):
