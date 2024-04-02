@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from .models import *
 from Users.models import Usuario
-from Problems.serializers import SimpleRawProblemSerializer
+from Problems.models import RawProblem
 
 class UserThesisSerializer(serializers.ModelSerializer):
     class Meta:
@@ -18,9 +18,9 @@ class UserThesisSerializer(serializers.ModelSerializer):
             'dni',
         ]
 
-class SimplePostulacionesSerializer(serializers.ModelSerializer):
+class SimpleRawProblemSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Postulaciones
+        model = RawProblem
         fields = '__all__'
 
 class PostulacionesSerializer(serializers.ModelSerializer):
