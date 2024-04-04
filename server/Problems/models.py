@@ -20,9 +20,9 @@ class RawProblem(models.Model):
     applicant = models.ForeignKey(Usuario, on_delete=models.CASCADE)
 
     # Contact Data
-    email_contact = models.EmailField(default='')
-    phone_contact = models.CharField(max_length=15, default='')
-    address_contact = models.TextField(default='')
+    email_contact = models.EmailField(default='1')
+    phone_contact = models.CharField(max_length=15, default='1')
+    address_contact = models.TextField(default='1')
     institution_type = models.CharField(max_length=150)
     institution_name = models.CharField(max_length=150)
 
