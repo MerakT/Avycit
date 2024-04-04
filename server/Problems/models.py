@@ -16,25 +16,36 @@ STATUS_CHOICES = [
 ]
 
 class RawProblem(models.Model):
+    # User Data
     applicant = models.ForeignKey(Usuario, on_delete=models.CASCADE)
-    title = models.CharField(max_length=150)
-    sector = models.CharField(max_length=150)
+
+    # Contact Data
+    email_contact = models.EmailField()
+    phone_contact = models.CharField(max_length=15)
+    address_contact = models.TextField()
     institution_type = models.CharField(max_length=150)
     institution_name = models.CharField(max_length=150)
+
+    # Problem Data
+    title = models.CharField(max_length=150)
     description = models.TextField()
     file_1 = models.FileField(upload_to='problems/', blank=True, null=True)
     file_2 = models.FileField(upload_to='problems/', blank=True, null=True)
     file_3 = models.FileField(upload_to='problems/', blank=True, null=True)
     file_4 = models.FileField(upload_to='problems/', blank=True, null=True)
+
+    # Status Data
     raw_status = models.CharField(
         max_length=12,
         choices=RAW_STATUTES,
         default='en revision',
     )
     is_supported = models.BooleanField(default=False)
-    observation = models.TextField(blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
+    # Review Data
+    observation = models.TextField(blank=True, null=True)
 
     def __str__(self):
         return self.title
