@@ -22,9 +22,11 @@ class RawProblem(models.Model):
     # Contact Data
     email_contact = models.EmailField(default='1')
     phone_contact = models.CharField(max_length=15, default='1')
-    address_contact = models.TextField(default='1')
-    institution_type = models.CharField(max_length=150)
-    institution_name = models.CharField(max_length=150)
+    institution_type = models.CharField(max_length=150, default=None, blank=True, null=True)
+    institution_name = models.CharField(max_length=150, default=None, blank=True, null=True)
+    ruc_contact = models.CharField(max_length=12, default=None, blank=True, null=True)
+    razon_social_contact = models.TextField(default=None, blank=True, null=True)
+    address_contact = models.TextField(default=None, blank=True, null=True)
 
     # Problem Data
     title = models.CharField(max_length=150)
