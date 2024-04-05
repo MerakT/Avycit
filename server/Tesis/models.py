@@ -1,6 +1,6 @@
 from django.db import models
 
-from Users.models import Usuario
+from Users.models import Usuario, ProgAcad
 from Problems.models import RawProblem
 
 #---------------------------- PARA LA FICHA PRELIMINAR ----------------------------
@@ -15,6 +15,11 @@ STATUS_CHOICES = [
 ]
 
 class PropuestaTesis(models.Model):
+    # User Data
+    creator = models.ForeignKey(Usuario, on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True)
+    # Propuesta Data
+    career = models.ForeignKey(ProgAcad, on_delete=models.CASCADE)
     propuesta_raw = models.ForeignKey(RawProblem, on_delete=models.CASCADE)
     donde = models.CharField(max_length=300)
     quienes = models.CharField(max_length=300)
