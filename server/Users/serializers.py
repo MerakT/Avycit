@@ -2,7 +2,7 @@ from dj_rest_auth.serializers import LoginSerializer, TokenSerializer
 from dj_rest_auth.registration.serializers import RegisterSerializer
 from rest_framework import serializers
 
-from .models import Usuario, ProgAcad
+from .models import Usuario, ProgAcad, ROLE_CHOICES
 
 
 class CustomTokenSerializer(TokenSerializer):
@@ -36,18 +36,22 @@ class CustomRegisterSerializer(RegisterSerializer):
     email = serializers.EmailField(required=True)
     nombre = serializers.CharField(required=True)
     apellidos = serializers.CharField(required=True)
-    role = serializers.CharField(required=True)
 
     class Meta:
         model = Usuario
 
     def custom_signup(self, request, user):
+        role = self.validated_data.get('role')
+
+        if not role or role not in ROLE_CHOICES:
+            raise serializers.ValidationError({'role': 'Invalid or missing role'})
+
         # General Data
-        user.username = self.validated_data.get('email', '')
-        user.email = self.validated_data.get('email', '')
-        user.first_name = self.validated_data.get('nombre', '')
-        user.last_name = self.validated_data.get('apellidos', '')
-        user.role = self.validated_data.get('role', '')
+        user.username = self.validated_data.get('email')
+        user.email = self.validated_data.get('email')
+        user.first_name = self.validated_data.get('nombre')
+        user.last_name = self.validated_data.get('apellidos')
+        user.role = role
 
         # UDH Data
         user.career = self.validated_data.get('career', None)
