@@ -28,6 +28,8 @@ class TesistaOrCoordinador(permissions.BasePermission):
 class PropuestaTesisList(ListCreateAPIView):
     authentication_classes = [authentication.TokenAuthentication]
 
+    serializer_class = PropuestaTesisSerializer
+
     def get_permissions(self):
         if self.request.method in ['POST']:
             return [OnlyCoordinador()]
