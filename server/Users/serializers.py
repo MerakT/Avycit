@@ -1,6 +1,7 @@
 from dj_rest_auth.serializers import LoginSerializer, TokenSerializer
 from dj_rest_auth.registration.serializers import RegisterSerializer
 from rest_framework import serializers
+from django.db import transaction
 
 from .models import Usuario, ProgAcad, ROLE_CHOICES
 
@@ -40,18 +41,24 @@ class CustomRegisterSerializer(RegisterSerializer):
     class Meta:
         model = Usuario
 
-    def custom_signup(self, request, user):
-        role = self.validated_data.get('role')
+    def validate(self, data):
+        data = super().validate(data)
 
+        # Check if the role is valid
+        role = data.get('role')
         if not role or role not in ROLE_CHOICES:
             raise serializers.ValidationError({'role': 'Invalid or missing role'})
 
+        return data
+
+    @transaction.atomic
+    def custom_signup(self, request, user):
         # General Data
         user.username = self.validated_data.get('email')
         user.email = self.validated_data.get('email')
         user.first_name = self.validated_data.get('nombre')
         user.last_name = self.validated_data.get('apellidos')
-        user.role = role
+        user.role = self.validated_data.get('role')
 
         # UDH Data
         user.career = self.validated_data.get('career', None)
