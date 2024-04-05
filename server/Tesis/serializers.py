@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from .models import *
 from Users.models import Usuario
+from Users.serializers import ProgAcadSerializer
 from Problems.models import RawProblem
 
 class UserThesisSerializer(serializers.ModelSerializer):
@@ -14,8 +15,18 @@ class UserThesisSerializer(serializers.ModelSerializer):
             'code',
             'career',
             'grado',
-            'role',
             'dni',
+        ]
+
+class CuratorSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Usuario
+        fields = [
+            'first_name',
+            'last_name',
+            'code',
+            'email',
+            'career',
         ]
 
 class SimpleRawProblemSerializer(serializers.ModelSerializer):
@@ -58,8 +69,10 @@ class HipotesisEspSerializer(BaseSerializer):
         model = HipotesisEsp
 
 class PropuestaTesisSerializer(serializers.ModelSerializer):
+    creator = UserThesisSerializer(read_only=True)
+    career = ProgAcadSerializer(read_only=True)
     propuesta_raw = SimpleRawProblemSerializer(read_only=True)
-    postulaciones = PostulacionesSerializer(many=True)
+    postulaciones = serializers.SerializerMethodField('get_postulaciones_data')
     causas = CausasSerializer(many=True)
     consecuencias = ConsecuenciasSerializer(many=True)
     aportes = AportesSerializer(many=True)
@@ -67,8 +80,14 @@ class PropuestaTesisSerializer(serializers.ModelSerializer):
     objetivos = ObjetivosEspSerializer(many=True)
     hipotesis = HipotesisEspSerializer(many=True)
 
+    def get_postulaciones_data(self, obj):
+        try:
+            postulaciones = Postulaciones.objects.filter(propuesta=obj)
+            return PostulacionesSerializer(postulaciones, many=True).data
+        except:
+            return []
+
     def create(self, validated_data):
-        postulaciones_data = validated_data.pop('postulaciones')
         causas_data = validated_data.pop('causas')
         consecuencias_data = validated_data.pop('consecuencias')
         aportes_data = validated_data.pop('aportes')
@@ -78,10 +97,6 @@ class PropuestaTesisSerializer(serializers.ModelSerializer):
 
         propuesta_tesis = PropuestaTesis.objects.create(**validated_data)
 
-        Postulaciones.objects.bulk_create([
-            Postulaciones(propuesta=propuesta_tesis, **data) 
-            for data in postulaciones_data
-        ])
         Causas.objects.bulk_create([
             Causas(propuesta=propuesta_tesis, **data) 
             for data in causas_data
