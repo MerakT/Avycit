@@ -231,7 +231,7 @@ DEFAULT_FROM_EMAIL = EMAIL_HOST_USER                            # email ending w
 
 # <EMAIL_CONFIRM_REDIRECT_BASE_URL>/<key>
 EMAIL_CONFIRM_REDIRECT_BASE_URL = \
-    "http://localhost:3000/verify_email_redirect/?key=" # Send the Key to the frontend to make the request on the backend
+    "https://banco-de-ideas-latest.onrender.com/verify_email_redirect/?key=" # Send the Key to the frontend to make the request on the backend
 
 # <PASSWORD_RESET_CONFIRM_REDIRECT_BASE_URL>/<uidb64>/<token>
 PASSWORD_RESET_CONFIRM_REDIRECT_BASE_URL = \
