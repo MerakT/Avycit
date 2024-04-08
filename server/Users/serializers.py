@@ -5,6 +5,10 @@ from django.db import transaction
 
 from .models import Usuario, ProgAcad, ROLE_CHOICES
 
+REGISTER_ROLE_CHOICES = (
+    'p_natural', 'emprendedor', 'empresa', 'ong', 'gobierno', 'admin', 'vri'
+)
+
 
 class CustomTokenSerializer(TokenSerializer):
 
@@ -37,44 +41,51 @@ class CustomRegisterSerializer(RegisterSerializer):
     email = serializers.EmailField(required=True)
     nombre = serializers.CharField(required=True)
     apellidos = serializers.CharField(required=True)
-
-    class Meta:
-        model = Usuario
-
+    
     def validate(self, data):
         data = super().validate(data)
 
         # Check if the role is valid
-        role = data.get('role')
-        if not role or role not in ROLE_CHOICES:
+        role = self.context['request'].data.get('role')
+        if not role or role not in REGISTER_ROLE_CHOICES:
             raise serializers.ValidationError({'role': 'Invalid or missing role'})
 
         return data
+    
+    @transaction.atomic
+    def save(self, request):
+        user = super().save(request)
+        self.custom_signup(request, user)
+        return user
+
+    class Meta:
+        model = Usuario
 
     @transaction.atomic
     def custom_signup(self, request, user):
+        print(request.data)
         # General Data
         user.username = self.validated_data.get('email')
         user.email = self.validated_data.get('email')
         user.first_name = self.validated_data.get('nombre')
         user.last_name = self.validated_data.get('apellidos')
-        user.role = self.validated_data.get('role')
+        user.role = self.context['request'].data.get('role')
 
         # UDH Data
-        user.career = self.validated_data.get('career', None)
-        user.code = self.validated_data.get('code', None)
-        user.grado = self.validated_data.get('grado', None)
-        user.signature_photo = self.validated_data.get('signature_photo', None)
+        user.career = request.data.get('career', None)
+        user.code = request.data.get('code', None)
+        user.grado = request.data.get('grado', None)
+        user.signature_photo = request.data.get('signature_photo', None)
 
         # Banco de Problemas Data
-        user.dni = self.validated_data.get('dni', None)
-        user.ruc = self.validated_data.get('ruc', None) # EMPRESA
-        user.razon_social = self.validated_data.get('razon_social', None) # EMPRESA
-        user.phone = self.validated_data.get('phone', None)
-        user.address = self.validated_data.get('address', None)
-        user.can_finance = self.validated_data.get('can_finance', None)
-        user.charge = self.validated_data.get('charge', None) # EMPRESA
-        user.area = self.validated_data.get('area', None) # EMPRESA
+        user.dni = request.data.get('dni', None)
+        user.ruc = request.data.get('ruc', None) # EMPRESA
+        user.razon_social = request.data.get('razon_social', None) # EMPRESA
+        user.phone = request.data.get('phone', None)
+        user.address = request.data.get('address', None)
+        user.can_finance = request.data.get('can_finance', None)
+        user.charge = request.data.get('charge', None) # EMPRESA
+        user.area = request.data.get('area', None) # EMPRESA
 
         # Save the User
         user.save()
