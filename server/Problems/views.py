@@ -30,6 +30,11 @@ class OnlyApplicant(permissions.BasePermission):
         # Allow only the creator to delete problems
         return obj.applicant == request.user
     
+class OnlyNaturalPerson(permissions.BasePermission):
+    def has_permission(self, request, view):
+        # Allow only users with the role 'admin' to create problems
+        return request.user.role == 'p_natural'
+    
 #---------------------------- BASE ------------------------------
 class ProblemList(ListCreateAPIView):
     authentication_classes = [authentication.TokenAuthentication]
@@ -96,7 +101,7 @@ class RawProblemList(ProblemList):
 
     def get_permissions(self):
         if self.request.method in ['POST']:
-            self.permission_classes = [permissions.IsAuthenticated, OnlyApplicant]
+            self.permission_classes = [permissions.IsAuthenticated, OnlyNaturalPerson]
         else:
             self.permission_classes = [permissions.IsAuthenticated, IsApplicantOrIsAdmin]
         return super(RawProblemList, self).get_permissions()
