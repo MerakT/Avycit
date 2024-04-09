@@ -32,16 +32,6 @@ class SimpleCleanProblemSerializer(serializers.ModelSerializer):
         
 class RawProblemSerializer(serializers.ModelSerializer):
     applicant = UserProblemSerializer(read_only=True)
-    clean_data = serializers.SerializerMethodField()
-
-    def get_clean_data(self, obj):
-        try:
-            clean_problem = CleanProblem.objects.get(raw_problem=obj.id)
-            if not clean_problem:
-                return None
-            return SimpleCleanProblemSerializer(clean_problem).data
-        except CleanProblem.DoesNotExist:
-            return None
 
     class Meta:
         model = RawProblem
