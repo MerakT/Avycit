@@ -27,7 +27,6 @@ class TesistaOrCoordinador(permissions.BasePermission):
 # ---------------------------- PROPUESTAS DE TESIS ------------------------------
 class PropuestaTesisList(ListCreateAPIView):
     authentication_classes = [authentication.TokenAuthentication]
-
     serializer_class = PropuestaTesisSerializer
 
     def get_permissions(self):
@@ -72,6 +71,7 @@ class PropuestaTesisList(ListCreateAPIView):
         return queryset
     
     def perform_create(self, serializer):
+        serializer.save(creator=self.request.user)
         try:
             coordinators = Usuario.objects.filter(role='coordinador', career=self.request.user.career)
             for coordinator in coordinators:
@@ -86,6 +86,8 @@ class PropuestaTesisList(ListCreateAPIView):
     
 class PropuestaTesisDetail(RetrieveUpdateDestroyAPIView):
     authentication_classes = [authentication.TokenAuthentication]
+    serializer_class = PropuestaTesisSerializer
+
 
     def get_permissions(self):
         if self.request.method in ['DELETE', 'PUT', 'PATCH']:
@@ -112,10 +114,13 @@ class PropuestaTesisDetail(RetrieveUpdateDestroyAPIView):
 # ---------------------------------------- POSTULACIONES ---------------------------------------------
 class PostulacionesList(ListCreateAPIView):
     authentication_classes = [authentication.TokenAuthentication]
+    serializer_class = PostulacionesSerializer
 
     def get_permissions(self):
         if self.request.method in ['GET']:
             return [TesistaOrCoordinador()]
+        elif self.request.method in ['PUT', 'PATCH']:
+            return [OnlyCoordinador()]
         return [OnlyTesista()]
 
     def get_queryset(self):

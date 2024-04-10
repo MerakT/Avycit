@@ -1,45 +1,9 @@
 from rest_framework import serializers
 from .models import *
-from Users.models import Usuario
-from Users.serializers import ProgAcadSerializer
+from Users.serializers import StudentDetailsSerializer, CuratorDetailsSerializer
 from Problems.models import RawProblem
 
-class UserThesisSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Usuario
-        fields = [
-            'id',
-            'first_name',
-            'last_name',
-            'email',
-            'code',
-            'career',
-            'grado',
-            'dni',
-        ]
-
-class CuratorSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Usuario
-        fields = [
-            'first_name',
-            'last_name',
-            'code',
-            'email',
-            'career',
-        ]
-
-class SimpleRawProblemSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = RawProblem
-        fields = '__all__'
-
-class PostulacionesSerializer(serializers.ModelSerializer):
-    tesista = UserThesisSerializer(read_only=True)
-    class Meta:
-        model = Postulaciones
-        fields = '__all__'
-
+#------------------------------------- PropuestaTesis RELATED -------------------------------------
 class BaseSerializer(serializers.ModelSerializer):
     class Meta:
         fields = '__all__'
@@ -68,9 +32,30 @@ class HipotesisEspSerializer(BaseSerializer):
     class Meta(BaseSerializer.Meta):
         model = HipotesisEsp
 
+#------------------------------------- SIMPLE SERIALIZER ( NO RELATIONSHIPS ) -------------------------------------
+class SimpleRawProblemSerializer(BaseSerializer):
+    class Meta(BaseSerializer.Meta):
+        model = RawProblem
+
+class SimplePropuestaTesisSerializer(serializers.ModelSerializer):
+    creator = StudentDetailsSerializer(read_only=True)
+    career = serializers.SlugRelatedField(slug_field='name', queryset=ProgAcad.objects.all())
+    propuesta_raw = SimpleRawProblemSerializer(read_only=True)
+    class Meta:
+        model = PropuestaTesis
+        fields = '__all__'
+
+#------------------------------------- COMPLEX SERIALIZER ( WITH RELATIONSHIPS ) -------------------------------------
+class PostulacionesSerializer(serializers.ModelSerializer):
+    tesista = StudentDetailsSerializer(read_only=True)
+    propuesta = SimplePropuestaTesisSerializer(read_only=True)
+    class Meta:
+        model = Postulaciones
+        fields = '__all__'
+
 class PropuestaTesisSerializer(serializers.ModelSerializer):
-    creator = UserThesisSerializer(read_only=True)
-    career = ProgAcadSerializer(read_only=True)
+    creator = CuratorDetailsSerializer(read_only=True)
+    career = serializers.SlugRelatedField(slug_field='name', queryset=ProgAcad.objects.all())
     propuesta_raw = SimpleRawProblemSerializer(read_only=True)
     postulaciones = serializers.SerializerMethodField('get_postulaciones_data')
     causas = CausasSerializer(many=True)
@@ -127,6 +112,7 @@ class PropuestaTesisSerializer(serializers.ModelSerializer):
         model = PropuestaTesis
         fields = '__all__'
 
+#------------------------------------- Tesis RELATED -------------------------------------
 class TesisSerializer(serializers.ModelSerializer):
     class Meta:
         model = Tesis
