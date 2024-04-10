@@ -33,9 +33,6 @@ class ProblemList(ListCreateAPIView):
                 kwargs = {field: value}
                 queryset = queryset.filter(**kwargs)
 
-        # Apply the combined Q object to the queryset
-        queryset = queryset.filter(q_object)
-
         return queryset
 
 class ProblemDetail(RetrieveUpdateDestroyAPIView):
