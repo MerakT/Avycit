@@ -1,24 +1,6 @@
 from rest_framework import serializers
 from .models import RawProblem, CleanProblem
-from Users.models import Usuario
-
-class UserProblemSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Usuario
-        fields = [
-            'id',
-            'first_name',
-            'last_name',
-            'email',
-            'role',
-            'dni',
-            'ruc',
-            'razon_social',
-            'phone',
-            'address',
-            'charge',
-            'area',
-        ]
+from Users.serializers import NaturalDetailsSerializer
 
 class SimpleRawProblemSerializer(serializers.ModelSerializer):
     class Meta:
@@ -31,7 +13,7 @@ class SimpleCleanProblemSerializer(serializers.ModelSerializer):
         fields = '__all__'
         
 class RawProblemSerializer(serializers.ModelSerializer):
-    applicant = UserProblemSerializer(read_only=True)
+    applicant = NaturalDetailsSerializer(read_only=True)
 
     class Meta:
         model = RawProblem
