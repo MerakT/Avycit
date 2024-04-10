@@ -33,7 +33,7 @@ class Facultad(models.Model):
         return self.name
 
 class ProgAcad(models.Model):
-    name = models.CharField(max_length=150)
+    name = models.CharField(max_length=150, unique=True)
     faculty = models.ForeignKey(Facultad, on_delete=models.CASCADE)
     coord = models.CharField(max_length=150)
 

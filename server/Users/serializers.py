@@ -3,15 +3,13 @@ from dj_rest_auth.registration.serializers import RegisterSerializer
 from rest_framework import serializers
 from django.db import transaction
 
-from .models import Usuario, ProgAcad, ROLE_CHOICES
+from .models import Usuario, ProgAcad
 
 REGISTER_ROLE_CHOICES = (
     'p_natural', 'emprendedor', 'empresa', 'ong', 'gobierno', 'admin', 'vri'
 )
 
-
 class CustomTokenSerializer(TokenSerializer):
-
     # Get the User data to pass to the response
     user = serializers.SerializerMethodField(read_only=True)
 
@@ -94,6 +92,7 @@ class CustomRegisterSerializer(RegisterSerializer):
 class UserDetailsSerializer(serializers.ModelSerializer):
     # Get the signature photo URL
     signature_photo = serializers.ImageField(use_url=True)
+    career = serializers.SlugRelatedField(slug_field='name', queryset=ProgAcad.objects.all())
 
     class Meta:
         model = Usuario
@@ -118,7 +117,56 @@ class UserDetailsSerializer(serializers.ModelSerializer):
         ]
         read_only_fields = ['id', 'email', 'role', 'career', 'code']
 
-class ProgAcadSerializer(serializers.ModelSerializer):
+class CareerSerializer(serializers.ModelSerializer):
     class Meta:
         model = ProgAcad
-        fields = ['id', 'name']
+        fields = ['name']
+
+class StudentDetailsSerializer(serializers.ModelSerializer):
+    career = serializers.SlugRelatedField(slug_field='name', queryset=ProgAcad.objects.all())
+
+    class Meta:
+        model = Usuario
+        fields = [
+            'id',
+            'first_name',
+            'last_name',
+            'email',
+            'code',
+            'career',
+            'grado',
+            'dni',
+        ]
+        read_only_fields = ['id', 'email', 'code', 'career', 'grado', 'dni']
+
+class CuratorDetailsSerializer(serializers.ModelSerializer):
+    career = serializers.SlugRelatedField(slug_field='name', queryset=ProgAcad.objects.all())
+
+    class Meta:
+        model = Usuario
+        fields = [
+            'first_name',
+            'last_name',
+            'code',
+            'email',
+            'career',
+        ]
+        read_only_fields = ['email', 'role', 'career', 'code']
+
+class NaturalDetailsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Usuario
+        fields = [
+            'id',
+            'first_name',
+            'last_name',
+            'email',
+            'role',
+            'dni',
+            'ruc',
+            'razon_social',
+            'phone',
+            'address',
+            'charge',
+            'area',
+        ]
