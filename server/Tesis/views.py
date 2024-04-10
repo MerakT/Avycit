@@ -2,7 +2,7 @@ from django.http import Http404
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView
-from rest_framework import authentication, permissions
+from rest_framework import authentication
 
 from .models import *
 from .serializers import *
@@ -11,28 +11,19 @@ from django.db.models import Q
 
 from Notis.models import Noti
 
-# --------------------------- PERMISSIONS ------------------------------
-class OnlyCoordinador(permissions.BasePermission):
-    def has_permission(self, request, view):
-        return request.user.role == 'coordinador'
+from server.permissions import OnlyCurator, TesistaOrCurator, OnlyCoordinador, TesistaOrCoordinador, OnlyTesista
     
-class OnlyTesista(permissions.BasePermission):
-    def has_permission(self, request, view):
-        return request.user.role == 'tesista'
-    
-class TesistaOrCoordinador(permissions.BasePermission):
-    def has_permission(self, request, view):
-        return request.user.role in ['tesista', 'coordinador']
-
 # ---------------------------- PROPUESTAS DE TESIS ------------------------------
 class PropuestaTesisList(ListCreateAPIView):
     authentication_classes = [authentication.TokenAuthentication]
     serializer_class = PropuestaTesisSerializer
 
     def get_permissions(self):
-        if self.request.method in ['POST']:
+        if self.request.method in ['POST', 'PUT', 'PATCH']:
+            return [OnlyCurator()]
+        elif self.request.method in ['DELETE']:
             return [OnlyCoordinador()]
-        return [permissions.IsAuthenticated]
+        return [TesistaOrCurator()]
 
     def get_queryset(self):
         queryset = super().get_queryset()
@@ -214,7 +205,7 @@ class PostulacionesDetail(RetrieveUpdateDestroyAPIView):
 # ---------------------------------------- PARA LA TESIS ---------------------------------------------
 class TesisList(APIView):
     authentication_classes = [authentication.TokenAuthentication]
-    permission_classes = [OnlyCoordinador]
+    permission_classes = [OnlyCoordinador()]
 
     def get(self, request, format=None):
         tesis = Tesis.objects.all()
@@ -230,7 +221,7 @@ class TesisList(APIView):
     
 class TesisDetail(APIView):
     authentication_classes = [authentication.TokenAuthentication]
-    permission_classes = [TesistaOrCoordinador]
+    permission_classes = [TesistaOrCoordinador()]
 
     def get_object(self, pk):
         try:
