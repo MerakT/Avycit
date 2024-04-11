@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from .models import *
-from Users.serializers import StudentDetailsSerializer, CuratorDetailsSerializer
+from Users.serializers import StudentDetailsSerializer, CuratorDetailsSerializer, NaturalDetailsSerializer
 from Problems.models import RawProblem
 
 #------------------------------------- PropuestaTesis RELATED -------------------------------------
@@ -34,8 +34,15 @@ class HipotesisEspSerializer(BaseSerializer):
 
 #------------------------------------- SIMPLE SERIALIZER ( NO RELATIONSHIPS ) -------------------------------------
 class SimpleRawProblemSerializer(BaseSerializer):
+    applicant = NaturalDetailsSerializer(read_only=True)
     class Meta(BaseSerializer.Meta):
         model = RawProblem
+        fields = [
+            'id',
+            'title',
+            'description',
+            'applicant',
+        ]
 
 class SimplePropuestaTesisSerializer(serializers.ModelSerializer):
     creator = StudentDetailsSerializer(read_only=True)
@@ -58,19 +65,43 @@ class PropuestaTesisSerializer(serializers.ModelSerializer):
     career = serializers.SlugRelatedField(slug_field='name', queryset=ProgAcad.objects.all())
     propuesta_raw = SimpleRawProblemSerializer(read_only=True)
     postulaciones = serializers.SerializerMethodField('get_postulaciones_data')
-    causas = CausasSerializer(many=True)
-    consecuencias = ConsecuenciasSerializer(many=True)
-    aportes = AportesSerializer(many=True)
-    variables = VariablesSerializer(many=True)
-    objetivos = ObjetivosEspSerializer(many=True)
-    hipotesis = HipotesisEspSerializer(many=True)
+    causas = serializers.SerializerMethodField('get_causas_data')
+    consecuencias = serializers.SerializerMethodField('get_consecuencias_data')
+    aportes = serializers.SerializerMethodField('get_aportes_data')
+    variables = serializers.SerializerMethodField('get_variables_data')
+    objetivos = serializers.SerializerMethodField('get_objetivos_data')
+    hipotesis = serializers.SerializerMethodField('get_hipotesis_data')
+
+    def get_related_data(self, obj, related_model, related_serializer):
+        try:
+            related_objects = related_model.objects.filter(propuesta=obj)
+            return related_serializer(related_objects, many=True).data
+        except related_model.DoesNotExist:
+            return []
 
     def get_postulaciones_data(self, obj):
-        try:
-            postulaciones = Postulaciones.objects.filter(propuesta=obj)
-            return PostulacionesSerializer(postulaciones, many=True).data
-        except:
-            return []
+        if self.context['request'].user.role == 'tesista':
+            return "No disponible para tesistas"
+        else:
+            return self.get_related_data(obj, Postulaciones, PostulacionesSerializer)
+        
+    def get_causas_data(self, obj):
+        return self.get_related_data(obj, Causas, CausasSerializer)
+
+    def get_consecuencias_data(self, obj):
+        return self.get_related_data(obj, Consecuencias, ConsecuenciasSerializer)
+
+    def get_aportes_data(self, obj):
+        return self.get_related_data(obj, Aportes, AportesSerializer)
+
+    def get_variables_data(self, obj):
+        return self.get_related_data(obj, Variables, VariablesSerializer)
+
+    def get_objetivos_data(self, obj):
+        return self.get_related_data(obj, ObjetivosEsp, ObjetivosEspSerializer)
+
+    def get_hipotesis_data(self, obj):
+        return self.get_related_data(obj, HipotesisEsp, HipotesisEspSerializer)
 
     def create(self, validated_data):
         causas_data = validated_data.pop('causas')

@@ -161,7 +161,6 @@ class NaturalDetailsSerializer(serializers.ModelSerializer):
             'first_name',
             'last_name',
             'email',
-            'role',
             'dni',
             'ruc',
             'razon_social',

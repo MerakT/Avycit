@@ -1,5 +1,5 @@
 from rest_framework.response import Response
-from rest_framework import authentication, permissions
+from rest_framework import authentication
 from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView
 
 from .models import RawProblem
