@@ -4,8 +4,9 @@ from django.core.exceptions import ObjectDoesNotExist
 from Users.models import Usuario, ProgAcad
 
 RAW_STATUTES = [
+    ('en espera', 'En espera'),
     ('en revision', 'En revisión'),
-    ('rechazado', 'Rechazado'),
+    ('rechazado', 'Resuelto'),
     ('publicado', 'Publicado'),
 ]
 
@@ -40,7 +41,7 @@ class RawProblem(models.Model):
     raw_status = models.CharField(
         max_length=12,
         choices=RAW_STATUTES,
-        default='en revision',
+        default='en espera',
     )
     is_supported = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -86,7 +87,7 @@ class TakenProblems(models.Model):
         max_length=10,
         choices=STATUS_CHOICES,
         default='tomado',
-        )
+    )
     
     def __str__(self):
         return self.problem.title + ' - ' + self.student.first_name + ' ' + self.student.last_name
