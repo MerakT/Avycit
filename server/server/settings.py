@@ -118,7 +118,7 @@ if ON_RENDER:
     DATABASES = {
     'default': dj_database_url.config(
         # Replace this value with your local database's connection string.
-        default='postgres://avicyttest_user:jFHpRSKv7d7EwqpjzIrREkMR8ux12Aeq@dpg-conp1s4f7o1s73fopuig-a.oregon-postgres.render.com/avicyttest',
+        default='postgres://merakt:kuGKGiCwnkGGcjtYzmXfFIaOgsnYzpta@dpg-cntlos6n7f5s7382bsmg-a.oregon-postgres.render.com/avicyt_k7tx',
         conn_max_age=600
     )
     }
