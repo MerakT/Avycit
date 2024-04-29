@@ -7,10 +7,13 @@ COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy the current directory contents into the container at /app
+COPY . /app
 
+# Set the working directory to /app
+WORKDIR /app
 
 EXPOSE 8000
 
 # Run app.py when the container launches
-ENTRYPOINT [ "python", "manage.py" ]
-CMD [ "runserver", "0.0.0.0:8000" ]
+ENTRYPOINT ["python", "manage.py"]
+CMD ["runserver", "0.0.0.0:8000"]
