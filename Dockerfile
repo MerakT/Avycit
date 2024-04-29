@@ -13,5 +13,5 @@ WORKDIR /server
 EXPOSE 8000
 
 # Run app.py when the container launches
-ENTRYPOINT [ "python", "manage.py" ]
+ENTRYPOINT [ "python", "/server/manage.py" ]
 CMD [ "runserver", "0.0.0.0:8000" ]
