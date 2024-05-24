@@ -1,6 +1,7 @@
 # Entornos
+env/
 venv/
-
+.env
 # Dependencias
 node_modules/
 bower_components/

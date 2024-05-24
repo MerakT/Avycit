@@ -13,6 +13,7 @@ from django.urls import path
 
 urlpatterns = [
     # Registration Related
+    
     path('register/', RegisterView.as_view(), name='register'), # For registration
     path('register/verify-email/', VerifyEmailView.as_view(), name='verify-email'), # For email verification
     path('register/resend-email/', ResendEmailVerificationView.as_view(), name='resend-email'), # For resending email verification

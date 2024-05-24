@@ -7,6 +7,9 @@ from .models import ProgAcad
 from .serializers import CareerSerializer
 
 from server.permissions import OnlyCoordinador
+from allauth.socialaccount.providers.google.views import GoogleOAuth2Adapter
+from allauth.socialaccount.providers.oauth2.client import OAuth2Client
+from allauth.socialaccount.views import SocialLogin
 
 def email_confirm_redirect(request, key):
     return HttpResponseRedirect(
@@ -27,4 +30,8 @@ class ProgAcadList(ListCreateAPIView):
             return [OnlyCoordinador()]
         return [permissions.AllowAny()]
 
+class GoogleLogin(SocialLogin):
+    adapter_class = GoogleOAuth2Adapter
+    callback_url = "http://localhost:3000/api/auth/callback/google"
+    client_class = OAuth2Client
     

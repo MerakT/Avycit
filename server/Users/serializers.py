@@ -6,7 +6,7 @@ from django.db import transaction
 from .models import Usuario, ProgAcad
 
 REGISTER_ROLE_CHOICES = (
-    'p_natural', 'emprendedor', 'empresa', 'ong', 'gobierno', 'admin', 'vri'
+    'p_natural', 'emprendedor', 'empresa', 'ong', 'gobierno', 'admin', 'vri',
 )
 
 class CustomTokenSerializer(TokenSerializer):
@@ -39,16 +39,19 @@ class CustomRegisterSerializer(RegisterSerializer):
     email = serializers.EmailField(required=True)
     nombre = serializers.CharField(required=True)
     apellidos = serializers.CharField(required=True)
+   
     
     def validate(self, data):
-        data = super().validate(data)
+            data = super().validate(data)
+            print("Data received in validate method:", data)
 
-        # Check if the role is valid
-        role = self.context['request'].data.get('role')
-        if not role or role not in REGISTER_ROLE_CHOICES:
-            raise serializers.ValidationError({'role': 'Invalid or missing role'})
+            # Check if the role is valid
+           # role = self.context['request'].data.get('role')
+            #print("Role received in validate method:", role)
+            #if role not in REGISTER_ROLE_CHOICES:
+             #  raise serializers.ValidationError({'role': 'Invalid or missing role'})
 
-        return data
+            return data
     
     @transaction.atomic
     def save(self, request):
@@ -67,7 +70,7 @@ class CustomRegisterSerializer(RegisterSerializer):
         user.email = self.validated_data.get('email')
         user.first_name = self.validated_data.get('nombre')
         user.last_name = self.validated_data.get('apellidos')
-        user.role = self.context['request'].data.get('role')
+        user.role = self.context['request'].data.get('role','p_natural')
 
         # UDH Data
         user.career = request.data.get('career', None)

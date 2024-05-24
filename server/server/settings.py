@@ -1,7 +1,9 @@
 from pathlib import Path
 import dj_database_url
 import os
+from dotenv import load_dotenv
 
+load_dotenv()
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -231,10 +233,27 @@ DEFAULT_FROM_EMAIL = EMAIL_HOST_USER                            # email ending w
 
 # <EMAIL_CONFIRM_REDIRECT_BASE_URL>/<key>
 EMAIL_CONFIRM_REDIRECT_BASE_URL = \
-    "https://banco-de-ideas-latest.onrender.com/verify_email_redirect/?key=" # Send the Key to the frontend to make the request on the backend
+    "https://componente-02.onrender.com/verify_email_redirect/?key=" # Send the Key to the frontend to make the request on the backend
 
 # <PASSWORD_RESET_CONFIRM_REDIRECT_BASE_URL>/<uidb64>/<token>
 PASSWORD_RESET_CONFIRM_REDIRECT_BASE_URL = \
     "<your frontend link>" # Send the UIDB64 and Token to the frontend to make the request on the backend
 
 # Social Auth
+SOCIALACCOUNT_PROVIDERS = {
+    "google": {
+        "APP": {
+            'client_id': os.environ['CLIENT_ID'],  #in .env file
+            'secret': os.environ['CLIENT_SECRET'], #in .env file
+            'key': "",                               # leave empty
+        },
+        'SCOPE': [
+            'profile',
+            'email',
+        ],
+        'AUTH_PARAMS': {
+            "access_type": "online",
+        },
+        "VERIFIED_EMAIL": True,
+    },
+}
