@@ -15,14 +15,16 @@ ROLE_CHOICES = [
     ('gobierno', 'Gobierno'),
     ('admin', 'Admin'),
     ('vri', 'Vri'),
+    ('docente','Docente'),
+    ('coordinador', 'Coordinador'),
 
     # UDH
     ('tesista', 'Tesista'),
     ('asesor', 'Asesor'),
     ('jurado', 'Jurado'),
-    ('coordinador', 'Coordinador'),
     ('sec_prog', 'Sec. Programa'),
     ('sec_fac', 'Sec. Facultad'),
+    
 ]
 
 class Facultad(models.Model):

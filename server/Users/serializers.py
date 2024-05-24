@@ -6,7 +6,7 @@ from django.db import transaction
 from .models import Usuario, ProgAcad
 
 REGISTER_ROLE_CHOICES = (
-    'p_natural', 'emprendedor', 'empresa', 'ong', 'gobierno', 'admin', 'vri',
+    'p_natural', 'emprendedor', 'empresa', 'ong', 'gobierno', 'admin', 'vri','docente','coordinador'
 )
 
 class CustomTokenSerializer(TokenSerializer):

@@ -15,7 +15,7 @@ STATUS_CHOICES = [
     ('abandonado', 'Abandonado'),
     ('finalizado', 'Finalizado'),
 ]
-
+#problemas en bruto -son los problemas antes de ser curados(p-natural)
 class RawProblem(models.Model):
     # User Data
     applicant = models.ForeignKey(Usuario, on_delete=models.CASCADE)
@@ -52,12 +52,13 @@ class RawProblem(models.Model):
 
     def __str__(self):
         return self.title
-    
+#problemas curados  
 class CleanProblem(models.Model):
     raw_problem = models.ForeignKey(RawProblem, on_delete=models.CASCADE)
     clean_title = models.CharField(max_length=150)
     clean_description = models.TextField()
     clean_sector = models.CharField(max_length=150)
+    #carrera del curador - P.A
     career_1 = models.ForeignKey(ProgAcad, on_delete=models.CASCADE, related_name='career_1')
     career_2 = models.ForeignKey(ProgAcad, on_delete=models.CASCADE, related_name='career_2', blank=True, null=True)
     career_3 = models.ForeignKey(ProgAcad, on_delete=models.CASCADE, related_name='career_3', blank=True, null=True)
@@ -65,7 +66,32 @@ class CleanProblem(models.Model):
     social_support = models.IntegerField(default=0)
     enviromental_support = models.IntegerField(default=0)
     importancy = models.IntegerField(default=0)
-
+   # nuevos cambios 
+   #campos para tipo de respuesta solución
+    tipo_solucion=models.CharField(max_length=150,null=True)
+    soluc_description=models.TextField(null=True)
+    #campos para tipo de respuesta-trabajo de curso
+    tec_type = models.CharField(max_length=150,null=True) #tipo de tecnologia
+    tra_adonde = models.CharField(max_length=150,null=True) #a donde se dirige la solucion
+    tra_quienes = models.CharField(max_length=150,null=True) #a quienes va dirigido
+    tra_problema = models.CharField(max_length=150,null=True) #cual es el problema
+    tra_causas = models.TextField(null=True) #causas
+    tra_consecuencias = models.TextField(null=True) #consecuencias
+    tra_aportes = models.TextField(null=True) #aportes
+    #campos para tipo de respuesta-investigación
+    titulo_pcca = models.CharField(max_length=150,null=True) #titulo del proyecto
+    problema = models.TextField(null=True) #problema
+    variable1 = models.CharField(max_length=150,null=True) #variable 1
+    variable2 = models.CharField(max_length=150,null=True) #variable 2
+    #campos para tipo de respuesta _ proyecto
+    nom_proyect = models.CharField(max_length=150,null=True) #nombre del proyecto
+    preparado_por = models.CharField(max_length=150,null=True) #preparado por
+    justificacion = models.TextField(null=True) #justificacion
+    objetivos = models.TextField(null=True) #objetivos
+    alcance = models.TextField(null=True) #alcance
+    descripcion_pro = models.TextField(null=True) #descripcion del proyecto
+    
+    
     # Override the save method to calculate the importancy and refuse creation if there is a raw problem associated with another clean problem
     def save(self, *args, **kwargs):
         if self.pk is None:
