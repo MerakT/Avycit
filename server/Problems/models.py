@@ -102,8 +102,8 @@ class CleanProblem(models.Model):
                 self.importancy = int((self.economic_support + self.social_support + self.enviromental_support) / 3)
         super(CleanProblem, self).save(*args, **kwargs)
 
-    def __str__(self):
-        return f'{self.clean_title} - Basado en => " {self.raw_problem.title}"'
+   # def __str__(self):
+      #  return f'{self.clean_title} - Basado en => " {self.raw_problem.title}"'
     
 class TakenProblems(models.Model):
     problem = models.ForeignKey(CleanProblem, on_delete=models.CASCADE)
