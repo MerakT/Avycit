@@ -2,8 +2,8 @@ from rest_framework.response import Response
 from rest_framework import authentication
 from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView
 
-from .models import RawProblem
-from .serializers import RawProblemSerializer
+from .models import RawProblem, CleanProblem
+from .serializers import RawProblemSerializer, CleanProblemSerializer
 
 from server.permissions import OnlyCurator, OnlyNaturalPerson, NaturalOrCurator
 
@@ -78,6 +78,53 @@ class RawProblemDetail(ProblemDetail):
         else:
             self.permission_classes = [NaturalOrCurator]
         return super(RawProblemDetail, self).get_permissions()
+
+    def update(self, request, *args, **kwargs):
+        problem = self.get_object()
+        if request.user != problem.applicant:
+            return Response(status=403)
+        return super().update(request, *args, **kwargs)
+
+    def delete(self, request, *args, **kwargs):
+        problem = self.get_object()
+        if request.user != problem.applicant:
+            return Response(status=403)
+        return super().delete(request, *args, **kwargs)
+#---------------------------- CLEAN PROBLEMS ------------------------------
+class CleanProblemList(ProblemList):
+    queryset = CleanProblem.objects.all()
+    serializer_class = CleanProblemSerializer
+
+    def get_permissions(self):
+        if self.request.method in ['POST']:
+            self.permission_classes = [OnlyCurator]
+        else:
+            self.permission_classes = [NaturalOrCurator]
+        return super(CleanProblemList, self).get_permissions()
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+
+        if getattr(self.request.user, 'role', None) != 'admin':
+            queryset = queryset.filter(applicant=self.request.user)
+        
+        return queryset
+
+    def perform_create(self, serializer):
+        serializer.save(applicant=self.request.user)
+        
+class CleanProblemDetail(ProblemDetail):
+    queryset = CleanProblem.objects.all()
+    serializer_class = CleanProblemSerializer
+
+    def get_permissions(self):
+        if self.request.method in ['PUT', 'PATCH']:
+            self.permission_classes = [OnlyCurator]
+        if self.request.method in ['DELETE']:
+            self.permission_classes = [OnlyCurator]
+        else:
+            self.permission_classes = [NaturalOrCurator]
+        return super(CleanProblemDetail, self).get_permissions()
 
     def update(self, request, *args, **kwargs):
         problem = self.get_object()
