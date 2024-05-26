@@ -106,12 +106,12 @@ class CleanProblemList(ProblemList):
         queryset = super().get_queryset()
 
         if getattr(self.request.user, 'role', None) != 'admin':
-            queryset = queryset.filter(applicant=self.request.user)
+            queryset = queryset.filter(creator=self.request.user)
         
         return queryset
 
     def perform_create(self, serializer):
-        serializer.save(applicant=self.request.user)
+        serializer.save(creator=self.request.user)
         
 class CleanProblemDetail(ProblemDetail):
     queryset = CleanProblem.objects.all()
@@ -128,12 +128,12 @@ class CleanProblemDetail(ProblemDetail):
 
     def update(self, request, *args, **kwargs):
         problem = self.get_object()
-        if request.user != problem.applicant:
+        if request.user != problem.creator:
             return Response(status=403)
         return super().update(request, *args, **kwargs)
 
     def delete(self, request, *args, **kwargs):
         problem = self.get_object()
-        if request.user != problem.applicant:
+        if request.user != problem.creator:
             return Response(status=403)
         return super().delete(request, *args, **kwargs)
