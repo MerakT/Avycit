@@ -6,7 +6,7 @@ from dj_rest_auth.views import (
     PasswordResetConfirmView,
     PasswordResetView,
 )
-from .views import email_confirm_redirect, password_reset_confirm_redirect
+from .views import email_confirm_redirect, password_reset_confirm_redirect, GoogleLogin
 from dj_rest_auth.registration.views import RegisterView
 from dj_rest_auth.views import LoginView, LogoutView, UserDetailsView
 from django.urls import path
@@ -33,4 +33,5 @@ urlpatterns = [
         name='password_reset_confirm'
     ), 
     path('password/reset/confirm/', PasswordResetConfirmView.as_view(), name='password_reset_confirm'), # For password reset confirmation
+    path("google/", GoogleLogin.as_view(), name="google_login"),
 ]

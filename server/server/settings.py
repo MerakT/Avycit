@@ -64,7 +64,7 @@ INSTALLED_APPS = [
     'Tesis',
 ]
 
-SITE_ID = 1 # For allauth
+SITE_ID = 3 # For allauth
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
