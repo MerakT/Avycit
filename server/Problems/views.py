@@ -72,7 +72,7 @@ class RawProblemDetail(ProblemDetail):
 
     def get_permissions(self):
         if self.request.method in ['PUT', 'PATCH']:
-            self.permission_classes = [OnlyNaturalPerson]
+            self.permission_classes = [NaturalOrCurator]
         if self.request.method in ['DELETE']:
             self.permission_classes = [OnlyCurator]
         else:
