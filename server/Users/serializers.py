@@ -172,3 +172,4 @@ class NaturalDetailsSerializer(serializers.ModelSerializer):
             'charge',
             'area',
         ]
+        read_only_fields=['email','dni','ruc','razon_social','phone','address','charge','area']

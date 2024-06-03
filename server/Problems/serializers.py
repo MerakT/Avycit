@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from .models import RawProblem, CleanProblem
-from Users.serializers import NaturalDetailsSerializer
+from Users.serializers import NaturalDetailsSerializer,CuratorDetailsSerializer
         
 class RawProblemSerializer(serializers.ModelSerializer):
     applicant = NaturalDetailsSerializer(read_only=True)
@@ -10,7 +10,8 @@ class RawProblemSerializer(serializers.ModelSerializer):
         fields='__all__'
 
 class CleanProblemSerializer(serializers.ModelSerializer):
-    creator = NaturalDetailsSerializer(read_only=True)
+    creator = CuratorDetailsSerializer(read_only=True)
     class Meta:
         model = CleanProblem
         fields='__all__'
+       
