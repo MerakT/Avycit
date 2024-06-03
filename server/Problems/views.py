@@ -97,7 +97,7 @@ class CleanProblemList(ProblemList):
 
     def get_permissions(self):
         if self.request.method in ['POST']:
-            self.permission_classes = [NaturalOrCurator]
+            self.permission_classes = [OnlyCurator]
         else:
             self.permission_classes = [NaturalOrCurator]
         return super(CleanProblemList, self).get_permissions()
