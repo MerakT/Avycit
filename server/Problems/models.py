@@ -52,6 +52,9 @@ class RawProblem(models.Model):
 
     def __str__(self):
         return self.title
+    ##boton que ayuda a  ver_guaardar
+    soluc_resuelt = models.IntegerField(null=True, blank=True)
+    
 #problemas curados  
 class CleanProblem(models.Model):
     raw_problem = models.ForeignKey(RawProblem, on_delete=models.CASCADE, null=True, blank=True)
