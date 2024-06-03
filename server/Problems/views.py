@@ -81,8 +81,8 @@ class RawProblemDetail(ProblemDetail):
 
     def update(self, request, *args, **kwargs):
         problem = self.get_object()
-        if request.user != problem.applicant:
-            return Response(status=403)
+       # if request.user != problem.applicant:
+          #  return Response(status=403)
         ###
         serializer = self.get_serializer(problem, data=request.data, partial=True)
         serializer.is_valid(raise_exception=True)
