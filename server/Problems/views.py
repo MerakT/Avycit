@@ -81,6 +81,7 @@ class RawProblemDetail(ProblemDetail):
 
     def update(self, request, *args, **kwargs):
         problem = self.get_object()
+       # se quito esta funcion para la autenticacion de la funcion actualizada
        # if request.user != problem.applicant:
           #  return Response(status=403)
         ###
