@@ -83,6 +83,16 @@ class RawProblemDetail(ProblemDetail):
         problem = self.get_object()
         if request.user != problem.applicant:
             return Response(status=403)
+        ###
+        serializer = self.get_serializer(problem, data=request.data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        self.perform_update(serializer)
+
+        # Si se proporciona el ID del CleanProblem en la solicitud, actualizamos soluc_resuelt
+        clean_problem_id = request.data.get('soluc_resuelt')
+        if clean_problem_id:
+            problem.soluc_resuelt = clean_problem_id
+            problem.save()
         return super().update(request, *args, **kwargs)
 
     def delete(self, request, *args, **kwargs):
