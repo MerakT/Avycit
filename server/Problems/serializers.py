@@ -10,7 +10,7 @@ class RawProblemSerializer(serializers.ModelSerializer):
         fields='__all__'
 
 class CleanProblemSerializer(serializers.ModelSerializer):
-    creator = CuratorDetailsSerializer(read_only=True)
+    creator = NaturalDetailsSerializer(read_only=True)
     class Meta:
         model = CleanProblem
         fields='__all__'
